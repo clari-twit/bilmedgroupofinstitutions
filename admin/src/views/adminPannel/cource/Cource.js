@@ -3,6 +3,7 @@ import "datatables.net";
 import { useEffect, useState } from 'react';
 import Cookies from 'js-cookie';
 import CourceData from 'views/adminPannel/cource/CourceData';
+import { getCurrentUser } from 'utils/localStorage/getCurrentUser';
 
 function Cource() {
   const [costomersData, setCostomersData] = useState({});
@@ -10,8 +11,8 @@ function Cource() {
 
   const getAllReworkData = async () => {
     try {
-      const token = Cookies.get('authToken');
-      const data = await axios.get(BASE_URL + '/api/course', {
+      const token = getCurrentUser()?.token;
+      const data = await axios.get(BASE_URL + 'api/course', {
         headers: {
           'x-access-token': token,
         },

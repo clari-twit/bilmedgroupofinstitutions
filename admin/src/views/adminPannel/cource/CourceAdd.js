@@ -1,6 +1,6 @@
 import { Add as AddIcon } from '@mui/icons-material';
 import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
-import { Box, FormControl, Grid, Tab, Tabs, TextField } from '@mui/material';
+import { Box, FormControl, Grid, Tab, Tabs, TextField, Typography } from '@mui/material';
 import { CustomButton, CustomInput } from 'components';
 import CustomSelectInput from 'components/CustomSelectInput';
 import { addGeneralDetailsInitialValues } from 'constant/initialValues';
@@ -25,7 +25,7 @@ function CourceAdd() {
     try {
       if (values) {
         const formData = new FormData();
-        const keysToInclude = ['course_file', 'course_name', 'course_description', 'course_exp_days', 'course_length', 'course_total_video', 'course_price', 'course_Doller_price', 'course_status'];
+        const keysToInclude = ['course_file', 'course_name', 'course_description', 'course_exp_days', 'course_length', 'course_total_video', 'course_price', 'course_Doller_price', 'course_status', 'source_type_title', 'source_data_type', 'source_URL', 'source_length', 'source_category', 'source_heading'];
         keysToInclude?.forEach(key => formData?.append(key, values[key]));
         await console.log(values, navigate, setLoading);
       }
@@ -42,10 +42,16 @@ function CourceAdd() {
     hiddenFileInput.current.click();
   };
 
-  // Entity Type options for
+  // Course status options for
   const coursStatus = ([
     { id: 1, name: 'Enable', value: 'Enable' },
     { id: 2, name: 'Disable', value: 'Disable' },
+  ]);
+
+  // Source category options for
+  const sourceCategory = ([
+    { id: 1, name: 'Biledmed', value: 'Biledmed' },
+    { id: 2, name: 'Nova', value: 'Nova' },
   ]);
 
   return (
@@ -57,15 +63,15 @@ function CourceAdd() {
       >
         {({ isValid, isSubmitting, setFieldValue, handleChange, values }) => (
           <Form autoComplete="off">
-            <Grid item xs={12}>
+            <Typography variant="h5" paddingLeft={2}>Cource Add</Typography>
+            <Grid item xs={12} textAlign="end">
               <CustomButton
                 isLoading={loading}
                 variant="contained"
-                height="52px"
+                height="30px"
                 width="104.17px"
                 backgroundColor="var(--black)"
-                margin="20px 0 0 0"
-                labelFontSize="18px"
+                margin="10px 0 0 0"
                 labelFontWeight={400}
                 label={loading ? undefined : 'Submit'}
                 type="submit"
@@ -78,6 +84,16 @@ function CourceAdd() {
                   }) ||
                   !isValid
                 }
+              />
+              <CustomButton
+                isLoading={loading}
+                variant="contained"
+                height="30px"
+                width="104.17px"
+                margin="10px 0 0 10px"
+                border="1px solid var(--black)"
+                labelFontWeight={400}
+                label="Cancel"
               />
             </Grid>
             <Tabs textColor="inherit" TabIndicatorProps={{ sx: UserAddProfileDetailsStyle.tabsColor }} value={valueExportTab} onChange={handleExportModalTabChange} aria-label="Tabs example" style={UserAddProfileDetailsStyle.exportModalTab}>
@@ -229,7 +245,7 @@ function CourceAdd() {
                         renderInput={(params) => (
                           <TextField
                             {...params}
-                            label="Entity Type "
+                            label="Course Status "
                             placeholder="Select course status"
                             focused="true"
                             requiredLabel
@@ -242,7 +258,101 @@ function CourceAdd() {
                 </Grid>
               </>}
             {valueExportTab === 1 &&
-              <Box>Hello</Box>}
+              <>
+                <Grid container columnSpacing={2}>
+                  <Grid item xs={12} lg={6}>
+                    <Field
+                      as={CustomInput}
+                      placeholder="Enter your source type title"
+                      label="Source Type Title"
+                      requiredLabel
+                      name="source_type_title"
+                      borderColorName="var(--darkGray)"
+                      type="text"
+                      sx={UserAddProfileDetailsStyle.field}
+                    />
+                    <ErrorMessage name="source_type_title" component="div" style={UserAddProfileDetailsStyle.errorMessage} />
+                  </Grid>
+                  <Grid item xs={12} lg={6}>
+                    <Field
+                      as={CustomInput}
+                      placeholder="Enter your source data type"
+                      label="Source Data Type"
+                      requiredLabel
+                      name="source_data_type"
+                      borderColorName="var(--darkGray)"
+                      type="text"
+                      sx={UserAddProfileDetailsStyle.field}
+                    />
+                    <ErrorMessage name="source_data_type" component="div" style={UserAddProfileDetailsStyle.errorMessage} />
+                  </Grid>
+                  <Grid item xs={12} lg={6}>
+                    <Field
+                      as={CustomInput}
+                      placeholder="Enter your source url"
+                      label="Source Data URL"
+                      requiredLabel
+                      name="source_URL"
+                      borderColorName="var(--darkGray)"
+                      type="text"
+                      sx={UserAddProfileDetailsStyle.field}
+                    />
+                    <ErrorMessage name="source_URL" component="div" style={UserAddProfileDetailsStyle.errorMessage} />
+                  </Grid>
+                  <Grid item xs={12} lg={6}>
+                    <Field
+                      as={CustomInput}
+                      placeholder="Enter your source length"
+                      label="Source Length"
+                      requiredLabel
+                      name="source_length"
+                      borderColorName="var(--darkGray)"
+                      type="text"
+                      sx={UserAddProfileDetailsStyle.field}
+                    />
+                    <ErrorMessage name="source_length" component="div" style={UserAddProfileDetailsStyle.errorMessage} />
+                  </Grid>
+                  <Grid item xs={12} lg={6} mt="40px">
+                    <FormControl fullWidth focused="true">
+                      <CustomSelectInput
+                        ListboxProps={{ style: UserAddProfileDetailsStyle.listBox }}
+                        fullWidth
+                        name="source_category"
+                        disableClearable
+                        options={sourceCategory}
+                        getOptionLabel={(option) => option.name}
+                        onChange={(event, newValue) => {
+                          handleChange({ target: { name: 'source_category', value: newValue?.value || '' } });
+                        }}
+                        value={sourceCategory.find((option) => option.value === values?.source_category) || null}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            label="Source Category "
+                            placeholder="Select course status"
+                            focused="true"
+                            requiredLabel
+                          />
+                        )}
+                      />
+                    </FormControl>
+                    <ErrorMessage name="source_category" component="div" style={UserAddProfileDetailsStyle.errorMessage} />
+                  </Grid>
+                  <Grid item xs={12} lg={6}>
+                    <Field
+                      as={CustomInput}
+                      placeholder="Enter your source heading"
+                      label="Source Heading"
+                      requiredLabel
+                      name="source_heading"
+                      borderColorName="var(--darkGray)"
+                      type="text"
+                      sx={UserAddProfileDetailsStyle.field}
+                    />
+                    <ErrorMessage name="source_heading" component="div" style={UserAddProfileDetailsStyle.errorMessage} />
+                  </Grid>
+                </Grid>
+              </>}
           </Form>
         )}
       </Formik>

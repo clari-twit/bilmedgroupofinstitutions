@@ -84,3 +84,10 @@ input[type="number"] {
 .MuiOutlinedInput-root {
   padding: 0 !important;
 }
+
+.dataTables_length {
+  display: none;
+}
+thead tr {
+  height: 45px;
+}

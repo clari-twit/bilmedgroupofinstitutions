@@ -10,8 +10,10 @@ import './table.css'
 import { CustomButton } from "components";
 import { Box, Typography } from "@mui/material";
 import { AdminPanelRouteOfEndpoint } from "constant/routesEndPoint";
+import { capitalizeFirstLetter } from "utils/CapitalizeFirstLetterUtils";
 
 function CourceData({ data, getAllReworkData }) {
+  console.log(data)
   const navigate = useNavigate();
   const dataTableRef = useRef(null);
   const BASE_URL = process.env.REACT_APP_BASE_URL;
@@ -43,22 +45,28 @@ function CourceData({ data, getAllReworkData }) {
           data: null,
           orderable: false,
           render: function (data, type, row) {
-            return `<input className="table_checkbox" style="width: 50px;" type="checkbox" value="${row.course_id}" />`;
+            return `<input className="table_checkbox" style="width: 100%;" type="checkbox" value="${row.course_id}" />`;
           },
         },
         {
           title: 'Image',
           data: 'course_image',
-          render: function (data, type, row) {
-            const imageUrl = `${BASE_URL}/api/${data}`;
-            return type === 'display' ? `<img src="${imageUrl}" class="source_img" alt="Course Image ${row.course_id}" />` : data;
+          render: function (data, type) {
+            const imageUrl = `${BASE_URL}api/${data}`;
+            if (data) {
+              return type === 'display' ? `<img src="${imageUrl}" class="source_img" alt="img" />` : data;
+            } else {
+              return null
+            }
           }
         },
-        { title: "Product Name", data: "course_name", orderable: false },
+        { title: "Product Name", data: "course_name", render: function (data, type) { 
+          return capitalizeFirstLetter(data)
+        }},
         { title: "Price", data: "course_price" },
         {
           title: "Status", data: "course_status", render: function (data, type, row) {
-            if (data == 1) { return "enable" } else { return "disable" }
+            if (data == 1) { return `<div class="enable">Enable</div>` } else { return `<div class="disable">Disable</div>`}
 
           }
         },
@@ -67,14 +75,14 @@ function CourceData({ data, getAllReworkData }) {
           data: "course_id",
           render: function (data) {
             return `
-            <div class="action_cell"><button class="edit-button pointer" data-id="${data}" >edit</button></div>`
+            <div class="action_cell"><button class="edit-button pointer" data-id="${data}" >Edit</button></div>`
           },
         },
       ],
 
       initComplete: function () {
         var checkAllCheckbox = $(
-          '<input  className="table_checkbox" style="width: 50px;" type="checkbox" id="checkAll" />'
+          '<input  className="table_checkbox" style="width: 100%;" type="checkbox" id="checkAll" />'
         ).appendTo($("#example thead th:first-child"));
         checkAllCheckbox.on("change", function () {
           var checked = $(this).prop("checked");
@@ -119,7 +127,7 @@ function CourceData({ data, getAllReworkData }) {
       <Box mt={2}>
         <Typography variant="h5" paddingLeft={2}>Cource</Typography>
       </Box>
-      <Box mt={1} textAlign="end">
+      <Box style={{transform: "translate(0px, 15px)"}} textAlign="end">
         <CustomButton
           variant="contained"
           height="30px"

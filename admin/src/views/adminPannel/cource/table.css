@@ -277,7 +277,7 @@ select:focus {
     background: var(--gray);
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: center;
     border: none;
     width: 70px;
     border-radius: 5px;
@@ -362,7 +362,7 @@ select:focus-visible {
 .display_table {
     width: 100%;
     white-space: nowrap;
-    border-collapse: collapse !important;
+    /* border-collapse: collapse !important; */
     margin-top: 60px;
 }
 
@@ -436,4 +436,16 @@ select:focus-visible {
     .dataTables_length {
         position: static;
     }
+}
+
+.disable {
+    color: red;
+}
+
+.enable {
+    color: green;
+}
+.source_img {
+    width: 36px;
+    height: 36px;
 }
