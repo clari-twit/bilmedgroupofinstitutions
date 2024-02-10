@@ -1,0 +1,126 @@
+body {
+  margin: 0 !important;
+  padding: 0 !important;
+  user-select: none !important;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+:root {
+  --black: #000000;
+  --white: #ffffff;
+  --darkGreen: #57ae52;
+  --gray: #d9d9d9;
+  --lightGray: #9c9c9c;
+  --veryLightGray: #e6e6e6;
+  --darkGray: #5d5d5d;
+  --red: #ff0000;
+  --green: #008000;
+  --neutral: #f4f4f4;
+  --lightNeutral: #efefef;
+  --darkNeutral: #6f767e;
+  --disabled: #bebebe;
+  --active: #03b958;
+  --inActive: #ff5c5c;
+  --lightYellow: #e8bb49;
+  --fullLightGray: #f7f7f7;
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+.tabView {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.tabViewScrollY {
+  max-height: 100%;
+  overflow-y: auto;
+}
+
+.tabView::-webkit-scrollbar {
+  display: block !important;
+  height: 4px;
+  width: 0px;
+}
+
+.tabViewScrollY::-webkit-scrollbar {
+  display: block !important;
+  height: 0px;
+  width: 4px;
+}
+
+.tabView::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 6px;
+}
+
+.tabViewScrollY::-webkit-scrollbar-thumb {
+  background-color: #888;
+  border-radius: 6px;
+}
+
+.tabView::-webkit-scrollbar-track {
+  background-color: #f1f1f1;
+}
+
+.tabViewScrollY::-webkit-scrollbar-track {
+  background-color: #f1f1f1;
+}
+
+input:-webkit-autofill {
+  -webkit-box-shadow: 0 0 0 30px var(--white) inset;
+}
+
+/* Remove number input in arrow */
+.mobileNumberArrowRemove input[type="number"]::-webkit-inner-spin-button,
+.mobileNumberArrowRemove input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+  margin: 0 !important;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none !important;
+  margin: 0 !;
+}
+
+/* Firefox */
+input[type="number"] {
+  -moz-appearance: textfield !important;
+}
+
+.MuiFormLabel-root-MuiInputLabel-root,
+.Mui-focused {
+  color: var(--darkGray) !important;
+}
+
+.infinite-scroll-component__outerdiv {
+  width: 100%;
+  justify-content: center;
+}
+
+.MuiAccordionDetails-root {
+  padding: 0px 16px 8px 16px !important;
+}
+
+.react-tel-input .form-control:focus {
+  box-shadow: none !important;
+}
+
+.MuiTab-textColorInherit {
+  max-width: unset !important;
+}
+
+.sidebarNavMenu:hover {
+  background-color: var(--fullLightGray) !important;
+}
+
+.MuiStack-root > .MuiTextField-root {
+  min-width: unset !important;
+}
