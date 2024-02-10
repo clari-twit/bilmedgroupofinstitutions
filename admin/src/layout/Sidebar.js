@@ -13,15 +13,7 @@ function Sidebar() {
   const [open, setOpen] = useState(window.innerWidth > 600);
   const location = useLocation()?.pathname;
   const userToken = getCurrentUser()?.token;
-  const userRole = getCurrentUser()?.roles?.[0];
   console.log(setOpen);
-
-  const pageWidth = {
-    'super admin': 'calc(100vw - 264px)',
-    'admin': 'calc(100vw - 264px)',
-    'employee': 'calc(100vw - 264px)'
-  };
-  const outletWidth = pageWidth[userRole];
 
   return (
     <Box>
@@ -54,7 +46,7 @@ function Sidebar() {
           </Box>
           <Box sx={sidebarStyle.rightSidePartOfScreen}>
             <Header />
-            <Box sx={{ ...sidebarStyle.contentPartOfScreen, width: open ? outletWidth : 'calc(100vw - 61px)' }}>
+            <Box sx={{ ...sidebarStyle.contentPartOfScreen, width: open ? 'calc(100vw - 264px)' : 'calc(100vw - 61px)' }}>
               <Box sx={sidebarStyle.outletMain}>
                 {userToken ? <Outlet /> : <Unauthorized />}
               </Box>
