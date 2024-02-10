@@ -80,3 +80,7 @@ input[type="number"] {
 .MuiStack-root>.MuiTextField-root {
   min-width: unset !important;
 }
+
+.MuiOutlinedInput-root {
+  padding: 0 !important;
+}
