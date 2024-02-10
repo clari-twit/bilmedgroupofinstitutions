@@ -28,7 +28,7 @@ export const headerStyle = {
   appBar: {
     backgroundColor: 'var(--white)',
     color: 'var(--black)',
-    height: { md: '90px', xs: '64px' },
+    height: '64px',
     justifyContent: 'center'
   },
   bellIcon: {
@@ -36,14 +36,6 @@ export const headerStyle = {
     backgroundColor: 'var(--white)',
     padding: '5px 10px',
     borderRadius: '8px'
-  },
-  smallScreenHeader: {
-    display: { xs: 'none', xl: 'flex', gap: '5px' },
-    justifyContent: 'space-between',
-    alignItems: 'center'
-  },
-  showMoreIcon: {
-    display: { xs: 'flex', xl: 'none' }
   },
   userMenuListFullScreen: {
     fontFamily: 'Sora, sans-serif'

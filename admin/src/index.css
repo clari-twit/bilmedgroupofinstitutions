@@ -26,50 +26,6 @@ body {
   --fullLightGray: #f7f7f7;
 }
 
-::-webkit-scrollbar {
-  display: none;
-}
-
-.tabView {
-  max-width: 100%;
-  overflow-x: auto;
-}
-
-.tabViewScrollY {
-  max-height: 100%;
-  overflow-y: auto;
-}
-
-.tabView::-webkit-scrollbar {
-  display: block !important;
-  height: 4px;
-  width: 0px;
-}
-
-.tabViewScrollY::-webkit-scrollbar {
-  display: block !important;
-  height: 0px;
-  width: 4px;
-}
-
-.tabView::-webkit-scrollbar-thumb {
-  background-color: #888;
-  border-radius: 6px;
-}
-
-.tabViewScrollY::-webkit-scrollbar-thumb {
-  background-color: #888;
-  border-radius: 6px;
-}
-
-.tabView::-webkit-scrollbar-track {
-  background-color: #f1f1f1;
-}
-
-.tabViewScrollY::-webkit-scrollbar-track {
-  background-color: #f1f1f1;
-}
-
 input:-webkit-autofill {
   -webkit-box-shadow: 0 0 0 30px var(--white) inset;
 }
@@ -121,6 +77,6 @@ input[type="number"] {
   background-color: var(--fullLightGray) !important;
 }
 
-.MuiStack-root > .MuiTextField-root {
+.MuiStack-root>.MuiTextField-root {
   min-width: unset !important;
 }

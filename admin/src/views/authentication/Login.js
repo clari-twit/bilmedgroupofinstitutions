@@ -6,6 +6,7 @@ import { loginInitialValues } from 'constant/initialValues';
 import { AdminPanelRouteOfEndpoint } from 'constant/routesEndPoint';
 import { loginValidationSchema } from 'constant/validationSchema';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
+import { setLocalStorageItem } from 'helper/localStorage';
 import { errorNotification } from 'helper/notification';
 import Cookies from 'js-cookie';
 import { useState } from 'react';
@@ -41,6 +42,11 @@ function Login() {
           if (rememberMe) {
             Cookies.set('authToken', data.token);
           }
+          const obj = {
+            ...data?.user,
+            token: data?.token
+          }
+          setLocalStorageItem('current_user', JSON.stringify(obj));
           navigate(AdminPanelRouteOfEndpoint.HOME_ROUTE);
         } else {
           errorNotification(data.message);

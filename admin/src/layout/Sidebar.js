@@ -1,4 +1,3 @@
-import { KeyboardArrowLeft as KeyboardArrowLeftIcon, KeyboardArrowRight as KeyboardArrowRightIcon } from '@mui/icons-material';
 import { Box, CssBaseline } from '@mui/material';
 import dataTechnoLogo from 'assets/companyLogo.jpeg';
 import { adminRole } from 'constant/sidebarNavLink';
@@ -10,10 +9,10 @@ import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { getCurrentUser } from 'utils/localStorage/getCurrentUser';
 
 function Sidebar() {
+  // eslint-disable-next-line
   const [open, setOpen] = useState(window.innerWidth > 600);
   const location = useLocation()?.pathname;
   const userToken = getCurrentUser()?.token;
-  console.log(setOpen);
 
   return (
     <Box>
@@ -22,12 +21,7 @@ function Sidebar() {
           <CssBaseline />
           <Box component="nav" style={open ? sidebarStyle.sideNav : sidebarStyle.sideNavClosed}>
             <Box sx={sidebarStyle.logo}>
-              <img src={dataTechnoLogo} alt={dataTechnoLogo} />
-            </Box>
-            <Box sx={sidebarStyle.leftRightArrow}>
-              <Box component="span" sx={sidebarStyle.sidebarOpenCloseMenuButton}>
-                {open ? <KeyboardArrowLeftIcon sx={sidebarStyle.arrowIcon} /> : <KeyboardArrowRightIcon sx={sidebarStyle.arrowIcon} />}
-              </Box>
+              <img src={dataTechnoLogo} alt={dataTechnoLogo} style={{ height: '50px', width: '50px' }} />
             </Box>
             <Box sx={sidebarStyle.sidebarMenu}>
               <Box sx={sidebarStyle.sidebarMenuCustom}>

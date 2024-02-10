@@ -14,8 +14,9 @@ export const sidebarStyle = {
     mt: { md: 0, xs: '30px' }
   },
   sidebarMenuCustom: {
-    height: 'calc(100vh - 150px)',
-    overflowY: 'auto'
+    height: 'calc(100vh - 100px)',
+    overflowY: 'auto',
+    paddingTop: '20px'
   },
   companyLogo: {
     transform: 'translate(0px, -16px)',
@@ -29,7 +30,7 @@ export const sidebarStyle = {
     width: '100%'
   },
   contentPartOfScreen: {
-    height: { md: 'calc(100vh - 90px)', xs: 'calc(100vh - 64px)' },
+    height: 'calc(100vh - 64px)',
     padding: { xs: '12px 12px', md: '20px 24px' },
     backgroundColor: 'var(--neutral)'
   },
