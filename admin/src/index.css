@@ -91,3 +91,7 @@ input[type="number"] {
 thead tr {
   height: 45px;
 }
+
+::-webkit-scrollbar {
+  display: none;
+}
