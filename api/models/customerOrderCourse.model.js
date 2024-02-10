@@ -40,7 +40,7 @@ const customerOrderCourseModel = {
     try {
       const query = `
       SELECT
-          cust.*,coc.*,ca.* ,
+          cust.*,coc.*,
           CONCAT('[', GROUP_CONCAT(
               '{"course_id":', c.course_id,
               ',"course_name":"', c.course_name,
@@ -57,8 +57,6 @@ const customerOrderCourseModel = {
           customer cust
       LEFT JOIN
           customer_order_courses coc ON cust.customer_id = coc.customer_id
-      LEFT JOIN
-          customer_address ca ON ca.customer_id = cust.customer_id
       LEFT JOIN
           courses c ON coc.course_id = c.course_id
       WHERE

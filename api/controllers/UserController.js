@@ -28,19 +28,19 @@ export default class UserController {
               expiresIn: 60 * process.env.JWT_TIME,
             }
           );
-          res.cookie("authToken", token, {
-            maxAge: 60 * process.env.JWT_TIME,
-            secure: true,
-            sameSite: "None",
-            path: "/",
-          });
+          // res.cookie("authToken", token, {
+          //   maxAge: 60 * process.env.JWT_TIME,
+          //   secure: true,
+          //   sameSite: "None",
+          //   path: "/",
+          // });
 
-          res.cookie("user_role", user.role_name, {
-            maxAge: 60 * process.env.JWT_TIME,
-            secure: true,
-            sameSite: "None",
-            path: "/",
-          });
+          // res.cookie("user_role", user.role_name, {
+          //   maxAge: 60 * process.env.JWT_TIME,
+          //   secure: true,
+          //   sameSite: "None",
+          //   path: "/",
+          // });
           res.json({
             status: true,
             message: "User Logged In...",

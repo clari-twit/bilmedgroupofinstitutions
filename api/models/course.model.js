@@ -2,17 +2,21 @@ import queryAsync from "../lib/db.js";
 
 const courseModel = {
   create: async (course) => {
+    console.log(course, "dfhjd");
+
     try {
       const result = await queryAsync(
-        "INSERT INTO `courses`(`course_name`, `course_description`, `course_expired_days`, `course_image`, `course_length`, `course_number_of_videos`, `course_price`, `course_status`, `create_at`) VALUES (?,?,?,?,?,?,?,?,?)",
+        "INSERT INTO `courses`(`course_name`, `course_description`, `course_expired_days`, `course_image`, `course_length`, `course_total_video`, `course_price`, `course_doller_price`,`course_head_option`,`course_status`, `create_at`) VALUES (?,?,?,?,?,?,?,?,?,?,?)",
         [
           course.course_name,
           course.course_description,
           course.course_expired_days,
           course.course_image,
           course.course_length,
-          course.course_number_of_videos,
+          course.course_total_video,
           course.course_price,
+          course.course_doller_price,
+          course.course_head_option,
           course.course_status,
           course.create_at,
         ]
@@ -26,15 +30,17 @@ const courseModel = {
   update: async (course) => {
     try {
       const result = await queryAsync(
-        "UPDATE `courses` SET `course_name`=?, `course_description`=?, `course_expired_days`=?,`course_image`=?, `course_length`=?, `course_number_of_videos`=?, `course_price`=?, `course_status`=?, `update_at`=? WHERE `course_id`=?",
+        "UPDATE `courses` SET `course_name`=?, `course_description`=?, `course_expired_days`=?,`course_image`=?, `course_length`=?, `course_total_video`=?, `course_price`=?,`course_doller_price`=?,`course_head_option`=? ,`course_status`=?, `update_at`=? WHERE `course_id`=?",
         [
           course.course_name,
           course.course_description,
           course.course_expired_days,
           course.course_image,
           course.course_length,
-          course.course_number_of_videos,
+          course.course_total_video,
           course.course_price,
+          course.course_doller_price,
+          course.course_head_option,
           course.course_status,
           course.update_at,
           course.course_id,
@@ -50,7 +56,7 @@ const courseModel = {
     try {
       const query = `
       SELECT c.course_id, c.course_name, c.course_description, c.course_expired_days,
-             c.course_image, c.course_length, c.course_number_of_videos, c.course_price, c.course_status,
+             c.course_image, c.course_length, c.course_total_video, c.course_price, c.course_doller_price, c.course_head_option, c.course_status,
              CONCAT('[', GROUP_CONCAT(
                CONCAT(
                  '{"course_data_id":', cd.course_data_id, 
@@ -59,6 +65,8 @@ const courseModel = {
                  '","course_data_url":"', cd.course_data_url, 
                  '","course_data_length":"', cd.course_data_length, 
                  '","course_count_of_view":', cd.course_data_count_of_view, 
+                 '","course_data_category":', cd.course_data_category, 
+                 '","course_data_heading":', cd.course_data_heading, 
                  ',"course_sort_order":', cd.course_data_sort_order, '}'
                )
              ), ']') AS course_data

@@ -162,7 +162,7 @@ export default class CustomerController {
         });
       }
 
-      res.status(200).json({
+      res.json({
         draw: draw,
         iTotalRecords: total_customers,
         iTotalDisplayRecords: total_filter_request,
@@ -330,7 +330,7 @@ export default class CustomerController {
 
   static async getStateByCountryId(req, res) {
     try {
-      const countryId = req.params.id;
+      const countryId = req.query.id;
 
       const states = await customer.getStatesByCountryId(countryId);
 

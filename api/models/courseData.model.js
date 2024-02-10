@@ -4,7 +4,7 @@ const courseDataModel = {
   create: async (courseData) => {
     try {
       const result = await queryAsync(
-        "INSERT INTO `course_data`(`course_id`, `course_data_type`, `course_data_title`, `course_data_url`, `course_data_length`, `course_data_sort_order`, `create_at`) VALUES (?,?,?,?,?,?,?)",
+        "INSERT INTO `course_data`(`course_id`, `course_data_type`, `course_data_title`, `course_data_url`, `course_data_length`,`course_data_category`,`course_data_heading`, `course_data_sort_order`, `create_at`) VALUES (?,?,?,?,?,?,?,?,?)",
         [
           courseData.course_id,
           courseData.course_data_type,
@@ -12,6 +12,8 @@ const courseDataModel = {
           courseData.course_data_url,
           courseData.course_data_length,
           // courseData.course_data_count_of_view,
+          courseData.course_data_category,
+          courseData.course_data_heading,
           courseData.course_data_sort_order,
           courseData.create_at,
         ]
@@ -25,13 +27,15 @@ const courseDataModel = {
   update: async (courseData) => {
     try {
       const result = await queryAsync(
-        "UPDATE `course_data` SET `course_data_type`=?, `course_data_title`=?, `course_data_url`=?,`course_data_length`=?, `course_data_sort_order`=?, `update_at`=? WHERE `course_data_id`=?",
+        "UPDATE `course_data` SET `course_data_type`=?, `course_data_title`=?, `course_data_url`=?,`course_data_length`=?,`course_data_category`=?,`course_data_heading`=?, `course_data_sort_order`=?, `update_at`=? WHERE `course_data_id`=?",
         [
           courseData.course_data_type,
           courseData.course_data_title,
           courseData.course_data_url,
           courseData.course_data_length,
           // courseData.course_data_count_of_view,
+          courseData.course_data_category,
+          courseData.course_data_heading,
           courseData.course_data_sort_order,
           courseData.update_at,
           courseData.course_data_id,
@@ -49,6 +53,18 @@ const courseDataModel = {
 
     const rows = await queryAsync(query, [courseId]);
     return rows;
+  },
+  getMaxSortOrder: async (course_id) => {
+    const query = `
+        SELECT MAX(course_data_sort_order) AS max_sort_order 
+        FROM course_data 
+        WHERE course_id = ?
+      `;
+    const result = await queryAsync(query, [course_id]);
+
+    const maxSortOrder = result[0].max_sort_order || 0;
+
+    return maxSortOrder;
   },
 
   deleteMultipleByCourseIds: async (courseIds) => {
@@ -86,10 +102,10 @@ const courseDataModel = {
   },
   updateCourseVideoCount: async (courseData) => {
     try {
-      const result = await queryAsync(
-        "UPDATE `course_data` SET `course_data_count_of_view`=? WHERE `course_data_id`=?",
-        [courseData.course_data_count_of_view, courseData.course_data_id]
-      );
+      const result = await queryAsync("UPDATE `course_data` SET `course_data_count_of_view`=? WHERE `course_data_id`=?", [
+        courseData.course_data_count_of_view,
+        courseData.course_data_id,
+      ]);
       return result.affectedRows;
     } catch (error) {
       throw error;

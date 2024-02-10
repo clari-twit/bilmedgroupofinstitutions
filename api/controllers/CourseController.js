@@ -9,50 +9,53 @@ const { _ } = lodash;
 export default class CourseController {
   static async insertCourse(req, res) {
     try {
-      const { course, course_data } = JSON.parse(req.body.course_data);
-
-      var image_path = "";
-      if (req.files && Object.keys(req.files).length > 0) {
-        const image = _.first(req.files.course_image);
-        image_path = `${image.destination}/${image.filename}`;
-      }
-      // const image = _.first(req.files.course_image);
       const {
         course_name,
         course_description,
-        course_expired_days,
+        course_exp_days,
         course_length,
-        course_number_of_videos,
+        course_total_video,
         course_price,
+        course_doller_price,
+        course_head_option,
         course_status,
-      } = course;
+        course_source,
+      } = req.body;
+      var image_path = "";
+      if (req.files && Object.keys(req.files).length > 0) {
+        const image = _.first(req.files.course_file);
+        image_path = `${image.destination}/${image.filename}`;
+      }
 
-      const formattedDate = new Date()
-        .toISOString()
-        .slice(0, 19)
-        .replace("T", " ");
+      const formattedDate = new Date().toISOString().slice(0, 19).replace("T", " ");
+
+      const headOptionString = JSON.stringify(course_head_option);
 
       const courseId = await courseModel.create({
         course_name,
         course_description,
-        course_expired_days,
+        course_expired_days: course_exp_days,
         course_image: image_path,
         course_length,
-        course_number_of_videos,
+        course_total_video,
         course_price,
+        course_doller_price,
+        course_head_option: headOptionString,
         course_status,
         create_at: formattedDate,
       });
 
-      if (course_data && course_data.length > 0) {
-        for (const [index, data] of course_data.entries()) {
+      if (course_source && course_source.length > 0) {
+        for (const [index, source] of course_source.entries()) {
           await courseDataModel.create({
             course_id: courseId,
-            course_data_type: data.course_data_type,
-            course_data_title: data.course_data_title,
-            course_data_url: data.course_data_url,
-            course_data_length: data.course_data_length,
-            course_data_sort_order: index,
+            course_data_type: source.source_data_type,
+            course_data_title: source.source_type_title,
+            course_data_url: source.source_URL,
+            course_data_length: source.source_length,
+            course_data_category: source.source_category,
+            course_data_heading: source.source_heading,
+            course_data_sort_order: index + 1,
             create_at: formattedDate,
           });
         }
@@ -99,20 +102,13 @@ export default class CourseController {
       // const offset = start || 0;
       // const page = Math.floor(start / length);
       // const pageSize = length || 10;
-      const page = isNaN(start)
-        ? 0
-        : Math.floor(Number(start) / (length || 10));
+      const page = isNaN(start) ? 0 : Math.floor(Number(start) / (length || 10));
       const pageSize = isNaN(length) ? 10 : Number(length);
 
       const offset = page * pageSize;
       const conditions = `1 ${search_query}`;
 
-      const coursesWithCourseData = await courseModel.findAllWithCourseData(
-        conditions,
-        `${column} ${column_sort_order}`,
-        pageSize,
-        offset
-      );
+      const coursesWithCourseData = await courseModel.findAllWithCourseData(conditions, `${column} ${column_sort_order}`, pageSize, offset);
       const total_courses = await courseModel.count(conditions);
 
       const total_filter_request = total_courses;
@@ -140,7 +136,7 @@ export default class CourseController {
 
   static async editCourse(req, res) {
     try {
-      var course_id = req.params.id;
+      var course_id = req.query.course_id;
       const course = await courseModel.findById(course_id);
       const courseData = await courseDataModel.findById(course_id);
       res.json({
@@ -154,29 +150,33 @@ export default class CourseController {
       console.log(error, "error");
       res.json({
         status: false,
-        message: "Somthing Wrong !!",
+        message: "Somthing Wrong !!" || error.message,
       });
     }
   }
 
   static async updateCourse(req, res) {
     try {
-      const { course, courseData } = req.body;
+      // const { course, course_data } = JSON.parse(req.body.course_data);
 
       const {
         course_id,
         course_name,
         course_description,
-        course_expired_days,
+        course_exp_days,
         course_length,
-        course_number_of_videos,
+        course_total_video,
         course_price,
+        course_doller_price,
+        course_head_option,
         course_status,
-      } = course;
+        course_source,
+      } = req.body;
       const courses = await courseModel.findById(course_id);
+      const headOptionString = JSON.stringify(course_head_option);
       var image = "";
       if (req.files && Object.keys(req.files).length > 0) {
-        image = _.first(req.files.course_image);
+        image = _.first(req.files.course_file);
       }
       var new_image = "";
       if (image !== undefined && image !== "") {
@@ -192,41 +192,58 @@ export default class CourseController {
         new_image = courses.course_image;
       }
 
-      const formattedDate = new Date()
-        .toISOString()
-        .slice(0, 19)
-        .replace("T", " ");
+      const formattedDate = new Date().toISOString().slice(0, 19).replace("T", " ");
 
       await courseModel.update({
         course_id,
         course_name,
         course_description,
-        course_expired_days,
+        course_expired_days: course_exp_days,
         course_image: new_image,
         course_length,
-        course_number_of_videos,
+        course_total_video,
         course_price,
+        course_doller_price,
+        course_head_option: headOptionString,
         course_status,
         update_at: formattedDate,
       });
 
-      if (courseData && courseData.length > 0) {
-        for (const [index, data] of courseData.entries()) {
+      for (const [index, source] of course_source.entries()) {
+        const maxSortOrder = await courseDataModel.getMaxSortOrder(course_id);
+        if (source.course_data_id) {
+          // If course_data_id exists, update the existing entry
           await courseDataModel.update({
-            course_data_type: data.course_data_type,
-            course_data_title: data.course_data_title,
-            course_data_url: data.course_data_url,
-            course_data_length: data.course_data_length,
-            course_data_sort_order: index,
+            course_data_type: source.source_data_type,
+            course_data_title: source.source_type_title,
+            course_data_url: source.source_URL,
+            course_data_length: source.source_length,
+            course_data_category: source.source_category,
+            course_data_heading: source.source_heading,
+            course_data_sort_order: index + 1,
             update_at: formattedDate,
-            course_data_id: data.course_data_id,
+            course_data_id: source.course_data_id,
+          });
+        } else {
+          const newSortOrder = maxSortOrder + 1;
+          // If course_data_id doesn't exist, insert a new entry
+          await courseDataModel.create({
+            course_id: course_id,
+            course_data_type: source.source_data_type,
+            course_data_title: source.source_type_title,
+            course_data_url: source.source_URL,
+            course_data_length: source.source_length,
+            course_data_category: source.source_category,
+            course_data_heading: source.source_heading,
+            course_data_sort_order: newSortOrder,
+            create_at: formattedDate,
           });
         }
       }
 
       res.json({
         status: true,
-        message: "User Updated Successfully....",
+        message: "course Updated Successfully....",
       });
     } catch (error) {
       console.log(error);
@@ -270,7 +287,7 @@ export default class CourseController {
 
   static async getCourseByCustomer(req, res) {
     try {
-      const customer_id = req.params.id;
+      const customer_id = req.query.customer_id;
 
       const courses = await courseModel.findByCustomerId(customer_id);
 
@@ -286,9 +303,7 @@ export default class CourseController {
       const courses_data = await courseModel.findByCourseIds(course_ids);
 
       const combinedArray = courses.map((course) => {
-        const matchingCourseData = courses_data.find(
-          (data) => data.course_id === course.course_id
-        );
+        const matchingCourseData = courses_data.find((data) => data.course_id === course.course_id);
 
         return {
           ...course,
@@ -298,10 +313,7 @@ export default class CourseController {
 
       if (combinedArray.length > 0) {
         const dataArray = combinedArray.map((course) => {
-          if (
-            course.course_data !== null &&
-            typeof course.course_data === "string"
-          ) {
+          if (course.course_data !== null && typeof course.course_data === "string") {
             course.course_data = JSON.parse(course.course_data);
           }
           return course;
@@ -323,22 +335,18 @@ export default class CourseController {
       console.log(error, "error");
       res.json({
         status: false,
-        message:
-          error.message || "An error occurred while fetching customer courses.",
+        message: error.message || "An error occurred while fetching customer courses.",
       });
     }
   }
 
   static async courseVideoCount(req, res) {
     try {
-      const course_data_id = req.params.id;
+      const course_data_id = req.query.id;
 
-      const courseData = await courseDataModel.getCourseDataById(
-        course_data_id
-      );
+      const courseData = await courseDataModel.getCourseDataById(course_data_id);
 
-      const course_data_count_of_view =
-        courseData.course_data_count_of_view + 1;
+      const course_data_count_of_view = courseData.course_data_count_of_view + 1;
 
       const data = await courseDataModel.updateCourseVideoCount({
         course_data_count_of_view,
@@ -352,8 +360,7 @@ export default class CourseController {
     } catch (error) {
       res.json({
         status: false,
-        message:
-          error.message || "An error occurred while fetching customer courses.",
+        message: error.message || "An error occurred while fetching customer courses.",
       });
     }
   }

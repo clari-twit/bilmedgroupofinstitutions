@@ -8,9 +8,10 @@ import customerRoutes from "./routes/customer.routes.js";
 import courseRoutes from "./routes/course.routes.js";
 import mediaRoutes from './routes/media.routes.js'
 
-
+const URL = process.env.HOST_URL;
+const HOST = process.env.HOST;
+const PORT = process.env.PORT || 8000;
 const app = express();
-
 
 app.use(
   cors({
@@ -36,7 +37,6 @@ app.use("/api/customer", customerRoutes);
 app.use("/api/course", courseRoutes);
 app.use('/api/storage/public/images', mediaRoutes)
 
-app.listen(8800, () => {
-  console.log("Backend server is running!");
+app.listen(PORT, HOST, () => {
+  console.log(`Api Listenig at ${URL}:${PORT}`);
 });
-

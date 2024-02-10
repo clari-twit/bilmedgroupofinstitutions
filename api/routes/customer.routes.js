@@ -31,9 +31,9 @@ route.use(cookieParser());
 
 // mobile api routes Start
 
-route.post("/auth", CustomerController.login);
+route.post("/customerauth", CustomerController.login);
 
-route.post("/fogetpass", CustomerController.forgetPassword);
+route.post("/forgotpassword", CustomerController.forgetPassword);
 
 // mobile api routes End
 
@@ -41,17 +41,17 @@ route.post("/fogetpass", CustomerController.forgetPassword);
 
 route.get("/", auth, CustomerController.getCustomer);
 
-route.get("/edit/:id", auth, CustomerController.editCustomer);
+route.get("/details", auth, CustomerController.editCustomer);
 
-route.post("/insert", auth, CustomerController.insertCustomer);
+route.post("/add", auth, CustomerController.insertCustomer);
 
-route.put("/upd", auth, CustomerController.updateCustomer);
+route.put("/update", auth, CustomerController.updateCustomer);
 
-route.delete("/mlpdelete", auth, CustomerController.deleteMultipleCustomers);
+route.delete("/multidelete", auth, CustomerController.deleteMultipleCustomers);
 
 route.get("/country", auth, CustomerController.getCountry);
 
-route.get("/country/:id", auth, CustomerController.getStateByCountryId);
+route.get("/state", auth, CustomerController.getStateByCountryId);
 
 route.get("/autocomplete", auth, CustomerController.searchByCourseName);
 

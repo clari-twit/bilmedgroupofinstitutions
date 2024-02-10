@@ -57,26 +57,25 @@ const upload = multer({
 });
 const UploadFiles = upload.fields([
   {
-    name: "course_image",
+    name: "course_file",
   },
 ]);
 
-route.post("/insert", auth, UploadFiles, CourseController.insertCourse);
+route.post("/add", auth, UploadFiles, CourseController.insertCourse);
 
 route.get("/", auth, CourseController.getcourse);
 
-route.get("/edit/:id", auth, CourseController.editCourse);
+route.get("/details", auth, CourseController.editCourse);
 
-route.put("/upd", auth, UploadFiles, CourseController.updateCourse);
+route.put("/update", auth, UploadFiles, CourseController.updateCourse);
 
-route.delete("/mlpdelete", auth, CourseController.deleteMultipleCourse);
+route.delete("/multidelete", auth, CourseController.deleteMultipleCourse);
 
 // mobile api routes Start
 
-route.get("/getcours/:id", CourseController.getCourseByCustomer);
+route.get("/getcourse", CourseController.getCourseByCustomer);
 
-route.get("/vidcount/:id", CourseController.courseVideoCount)
-
+route.get("/videocount", CourseController.courseVideoCount);
 // mobile api routes End
 
 export default route;
