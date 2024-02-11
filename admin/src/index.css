@@ -95,3 +95,10 @@ thead tr {
 ::-webkit-scrollbar {
   display: none;
 }
+
+.add_cource_data {
+  border: 1px solid red;
+  padding: 0 10px 10px 10px ;
+  border-radius: 10px;
+  margin: 10px;
+}

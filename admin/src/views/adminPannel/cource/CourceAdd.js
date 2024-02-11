@@ -1,362 +1,419 @@
-import { Add as AddIcon } from '@mui/icons-material';
-import AddPhotoAlternateIcon from '@mui/icons-material/AddPhotoAlternate';
-import { Box, FormControl, Grid, Tab, Tabs, TextField, Typography } from '@mui/material';
-import { CustomButton, CustomInput } from 'components';
-import CustomSelectInput from 'components/CustomSelectInput';
+import { Box, FormControl, Grid, Input, Tab, Tabs, TextField, Typography } from '@mui/material';
+import axios from 'axios';
+import { CustomButton } from 'components';
 import { addGeneralDetailsInitialValues } from 'constant/initialValues';
+import { AdminPanelRouteOfEndpoint } from 'constant/routesEndPoint';
 import { addGeneralDetailsValidationSchema } from 'constant/validationSchema';
-import { ErrorMessage, Field, Form, Formik } from 'formik';
-import { errorNotification } from 'helper/notification';
-import { useRef, useState } from 'react';
+import { useFormik } from 'formik';
+import { errorNotification, successNotification } from 'helper/notification';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getCurrentUser } from 'utils/localStorage/getCurrentUser';
 import { UserAddProfileDetailsStyle } from './UserAddProfileDetails.style';
 
 function CourceAdd() {
   const navigate = useNavigate();
-  const [valueExportTab, setValueExportTab] = useState(0);
+  const [selectedFile, setSelectedFile] = useState(null);
   const [loading, setLoading] = useState(false);
-  const requiredField = addGeneralDetailsValidationSchema._nodes;
+  const [valueExportTab, setValueExportTab] = useState(0);
+  const BASE_URL = process.env.REACT_APP_BASE_URL;
 
   const handleExportModalTabChange = (event, newValue) => {
     setValueExportTab(newValue);
   };
 
-  const handleSubmit = async (values, { setSubmitting }) => {
-    try {
-      if (values) {
-        const formData = new FormData();
-        const keysToInclude = ['course_file', 'course_name', 'course_description', 'course_exp_days', 'course_length', 'course_total_video', 'course_price', 'course_Doller_price', 'course_status', 'source_type_title', 'source_data_type', 'source_URL', 'source_length', 'source_category', 'source_heading'];
-        keysToInclude?.forEach(key => formData?.append(key, values[key]));
-        await console.log(values, navigate, setLoading);
+  const formik = useFormik({
+    initialValues: addGeneralDetailsInitialValues,
+    validationSchema: addGeneralDetailsValidationSchema,
+    onSubmit: async (values) => {
+      delete values["course_file"];
+      if (selectedFile === null) {
+        errorNotification("Please select a file.");
+        return;
       }
-    } catch (error) {
-      console.error('Error:', error);
-      errorNotification('Add a proper user data');
-    } finally {
-      setSubmitting(false);
+  console.log("VVVVVVVVVVVVVVV", values)
+      const formData = new FormData();
+      formData.append('course_file', selectedFile);
+  
+      // Flatten nested objects before appending to FormData
+      flattenObject(values, formData);
+  
+      for (let [key, value] of formData.entries()) {
+        console.log("FFFFFFFFFFFFFFFF", `Key: ${key}, Value: ${value}`);
+    }
+      try {
+        setLoading(true);
+        const token = getCurrentUser()?.token;
+        const response = await axios.post(BASE_URL + 'api/course/add', formData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            'x-access-token': token,
+          },
+        });
+  
+        if (response.data.status === true) {
+          successNotification("Course added successfully.");
+          setLoading(false);
+          navigate(AdminPanelRouteOfEndpoint.COURCE_ROUTE);
+        } else {
+          // Handle server response indicating failure
+          errorNotification("Failed to add course.");
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        errorNotification("An error occurred. Please try again later.");
+        setLoading(false);
+      }
+    }
+  });
+  
+  // Function to flatten nested objects
+  function flattenObject(obj, formData, prefix = '') {
+    for (const key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        const value = obj[key];
+        if (typeof value === 'object' && value !== null) {
+          flattenObject(value, formData, prefix + key + '.');
+        } else {
+          formData.append(prefix + key, value);
+        }
+      }
+    }
+  }
+  
+  
+
+  const handleAddCourseData = () => {
+    formik.setValues({
+      ...formik.values,
+      course_source: [
+        ...formik.values.course_source,
+        {
+          source_type_title: "",
+          source_data_type: "",
+          source_URL: "",
+          source_length: "",
+          source_heading: "",
+          source_heading: ""
+
+        },
+      ],
+    });
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (file && file.type === 'image/jpeg') {
+      setSelectedFile(file);
+    } else {
+      alert('Please select a valid JPG file.');
     }
   };
 
-  const hiddenFileInput = useRef(null);
-  const handleClick = event => {
-    hiddenFileInput.current.click();
-  };
+  const handleRemoveCource = (e) => {
+    const updatedCourseOrder = formik.values.course_source.filter((value, j) => j !== e);
+    formik.setValues({
+      ...formik.values,
+      course_source: updatedCourseOrder,
+    });
+  }
 
-  // Course status options for
-  const coursStatus = ([
-    { id: 1, name: 'Enable', value: 'Enable' },
-    { id: 2, name: 'Disable', value: 'Disable' },
-  ]);
-
-  // Source category options for
-  const sourceCategory = ([
-    { id: 1, name: 'Biledmed', value: 'Biledmed' },
-    { id: 2, name: 'Nova', value: 'Nova' },
-  ]);
+  console.log(formik.errors)
 
   return (
     <Box p={2}>
-      <Formik
-        initialValues={addGeneralDetailsInitialValues}
-        validationSchema={addGeneralDetailsValidationSchema}
-        onSubmit={handleSubmit}
-      >
-        {({ isValid, isSubmitting, setFieldValue, handleChange, values }) => (
-          <Form autoComplete="off">
-            <Typography variant="h5" paddingLeft={2}>Cource Add</Typography>
-            <Grid item xs={12} textAlign="end">
-              <CustomButton
-                isLoading={loading}
-                variant="contained"
-                height="30px"
-                width="104.17px"
-                backgroundColor="var(--black)"
-                margin="10px 0 0 0"
-                labelFontWeight={400}
-                label={loading ? undefined : 'Submit'}
-                type="submit"
-                disabled={
-                  loading ||
-                  isSubmitting ||
-                  Object.keys(values).some((key) => {
-                    const value = values[key];
-                    return requiredField.includes(key) && (!value || (typeof value === 'string' && value.trim() === ''));
-                  }) ||
-                  !isValid
-                }
-              />
-              <CustomButton
-                isLoading={loading}
-                variant="contained"
-                height="30px"
-                width="104.17px"
-                margin="10px 0 0 10px"
-                border="1px solid var(--black)"
-                labelFontWeight={400}
-                label="Cancel"
-              />
+      <form autoComplete="off" onSubmit={formik.handleSubmit}>
+        <Typography variant="h5" paddingLeft={2}>Cource Add</Typography>
+        <Tabs textColor="inherit" TabIndicatorProps={{ sx: UserAddProfileDetailsStyle.tabsColor }} value={valueExportTab} onChange={handleExportModalTabChange} aria-label="Tabs example" style={UserAddProfileDetailsStyle.exportModalTab}>
+          <Tab label="Genral" />
+          <Tab label="Source" />
+        </Tabs>
+        {valueExportTab === 0 &&
+          <>
+            <Grid container columnSpacing={2} mt={2}>
+              <Grid item xs={12} lg={6}>
+                <TextField
+                  id="course_name"
+                  name="course_name"
+                  label="Course Name"
+                  variant="outlined"
+                  onChange={formik.handleChange}
+                  value={formik.values.course_name}
+                  error={formik.touched.course_name && Boolean(formik.errors.course_name)}
+                  helperText={formik.touched.course_name && formik.errors.course_name}
+                  sx={{ width: '100%', my: '15px' }}
+                />
+              </Grid>
+              <Grid item xs={12} lg={6}>
+                <FormControl>
+                  <Input
+                    type="file"
+                    id="fileInput"
+                    inputProps={{ accept: 'image/jpeg' }}
+                    onChange={handleFileChange}
+                    sx={{ width: '100%', my: '15px' }}
+                  />
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} lg={6} >
+                <TextField
+                  id="course_description"
+                  name="course_description"
+                  label="Course Description"
+                  variant="outlined"
+                  onChange={formik.handleChange}
+                  value={formik.values.course_description}
+                  error={formik.touched.course_description && Boolean(formik.errors.course_description)}
+                  helperText={formik.touched.course_description && formik.errors.course_description}
+                  sx={{ width: '100%', my: '15px' }}
+                />
+              </Grid>
+              <Grid item xs={12} lg={6}>
+                <TextField
+                  id="course_exp_days"
+                  name="course_exp_days"
+                  label="Course Expired days"
+                  type="number"
+                  variant="outlined"
+                  onChange={formik.handleChange}
+                  value={formik.values.course_exp_days}
+                  error={formik.touched.course_exp_days && Boolean(formik.errors.course_exp_days)}
+                  helperText={formik.touched.course_exp_days && formik.errors.course_exp_days}
+                  sx={{ width: '100%', my: '15px' }}
+                />
+              </Grid>
+              <Grid item xs={12} lg={6}>
+                <TextField
+                  id="course_total_video"
+                  name="course_total_video"
+                  label="Course total video"
+                  type="number"
+                  variant="outlined"
+                  onChange={formik.handleChange}
+                  value={formik.values.course_total_video}
+                  error={formik.touched.course_total_video && Boolean(formik.errors.course_total_video)}
+                  helperText={formik.touched.course_total_video && formik.errors.course_total_video}
+                  sx={{ width: '100%', my: '15px' }}
+                />
+              </Grid>
+              <Grid item xs={12} lg={6}>
+                <TextField
+                  id="course_length"
+                  name="course_length"
+                  label="Course length"
+                  type="text"
+                  variant="outlined"
+                  onChange={formik.handleChange}
+                  value={formik.values.course_length}
+                  error={formik.touched.course_length && Boolean(formik.errors.course_length)}
+                  helperText={formik.touched.course_length && formik.errors.course_length}
+                  sx={{ width: '100%', my: '15px' }}
+                />
+              </Grid>
+  
+              <Grid item xs={12} lg={6}>
+                <TextField
+                  id="course_price"
+                  name="course_price"
+                  label="Course price"
+                  type="number"
+                  variant="outlined"
+                  onChange={formik.handleChange}
+                  value={formik.values.course_price}
+                  error={formik.touched.course_price && Boolean(formik.errors.course_price)}
+                  helperText={formik.touched.course_price && formik.errors.course_price}
+                  sx={{ width: '100%', my: '15px' }}
+                />
+              </Grid>
+              <Grid item xs={12} lg={6}>
+                <TextField
+                  id="course_Doller_price"
+                  name="course_Doller_price"
+                  label="Course doller price"
+                  type="number"
+                  variant="outlined"
+                  onChange={formik.handleChange}
+                  value={formik.values.course_Doller_price}
+                  error={formik.touched.course_Doller_price && Boolean(formik.errors.course_Doller_price)}
+                  helperText={formik.touched.course_Doller_price && formik.errors.course_Doller_price}
+                  sx={{ width: '100%', my: '15px' }}
+                />
+              </Grid>
+              <Grid item xs={12} lg={6}>
+                <TextField
+                  id="status"
+                  name="course_status"
+                  select
+                  variant="outlined"
+                  onChange={formik.handleChange}
+                  onBlur={formik.handleBlur}
+                  value={formik.values.course_status || ""}
+                  SelectProps={{ native: true }}
+                  error={formik.touched?.course_status && Boolean(formik.errors?.course_status)}
+                  helperText={formik.touched?.course_status && formik.errors?.course_status}
+                  fullWidth
+                  margin="normal"
+                  sx={{ my: '15px' }}
+                >
+                  <option value="" disabled>Status</option>
+                  <option value="Disable">Disable</option>
+                  <option value="Enable">Enable</option>
+                </TextField>
+              </Grid>
             </Grid>
-            <Tabs textColor="inherit" TabIndicatorProps={{ sx: UserAddProfileDetailsStyle.tabsColor }} value={valueExportTab} onChange={handleExportModalTabChange} aria-label="Tabs example" style={UserAddProfileDetailsStyle.exportModalTab}>
-              <Tab label="Genral" />
-              <Tab label="Source" />
-            </Tabs>
-            {valueExportTab === 0 &&
-              <>
-                <Grid container sx={UserAddProfileDetailsStyle.uploadImageMain}>
-                  <Grid item>
-                    {values.course_file !== '' ?
-                      <img src={values.course_file && URL.createObjectURL(values.course_file)} name="course_file" alt="profile" style={UserAddProfileDetailsStyle.profileImage} /> :
-                      <AddPhotoAlternateIcon style={UserAddProfileDetailsStyle.profileImage} />}
-                  </Grid>
-                  <Grid item sx={UserAddProfileDetailsStyle.uploadButton}>
-                    <input
-                      type="file"
-                      name="course_file"
-                      accept=".jpg, .jpeg, .png"
-                      onChange={(e) => { setFieldValue('course_file', e.currentTarget.files[0]) }}
-                      ref={hiddenFileInput}
-                      style={{ display: 'none' }}
-                    />
+          </>}
+        {valueExportTab === 1 && <>
+          {formik.values.course_source.map((course_source, index) => (
+            <div className='add_cource_data' key={index} >
+              <Grid container columnSpacing={2} mt={2}>
+                <Grid item xs={4} lg={2}>
+                  <TextField
+                    id={`source_type_title_${index}`}
+                    name={`course_source[${index}].source_type_title`}
+                    label="Source type title"
+                    type="text"
+                    variant="outlined"
+                    onChange={formik.handleChange}
+                    value={course_source.source_type_title}
+                    error={formik.touched.course_source && formik.errors.course_source && Boolean(formik.errors.course_source[index]?.source_type_title)}
+                    helperText={formik.touched.course_source && formik.errors.course_source && formik.errors.course_source[index]?.source_type_title}
+                    sx={{ width: '100%', my: '15px' }}
+                  />
+                </Grid>
+                <Grid item xs={4} lg={2}>
+                  <TextField
+                    id={`source_data_type_${index}`}
+                    name={`course_source[${index}].source_data_type`}
+                    label="Source data type"
+                    type="text"
+                    variant="outlined"
+                    onChange={formik.handleChange}
+                    value={course_source.source_data_type}
+                    error={formik.touched.course_source && formik.errors.course_source && Boolean(formik.errors.course_source[index]?.source_data_type)}
+                    helperText={formik.touched.course_source && formik.errors.course_source && formik.errors.course_source[index]?.source_data_type}
+                    sx={{ width: '100%', my: '15px' }}
+                  />
+                </Grid>
+                <Grid item xs={4} lg={2}>
+                  <TextField
+                    id={`source_URL_${index}`}
+                    name={`course_source[${index}].source_URL`}
+                    label="Source URL"
+                    type="text"
+                    variant="outlined"
+                    onChange={formik.handleChange}
+                    value={course_source.source_URL}
+                    error={formik.touched.course_source && formik.errors.course_source && Boolean(formik.errors.course_source[index]?.source_URL)}
+                    helperText={formik.touched.course_source && formik.errors.course_source && formik.errors.course_source[index]?.source_URL}
+                    sx={{ width: '100%', my: '15px' }}
+                  />
+                </Grid>
+                <Grid item xs={4} lg={2}>
+                  <TextField
+                    id={`source_heading_${index}`}
+                    name={`course_source[${index}].source_heading`}
+                    label="Source heading"
+                    type="text"
+                    variant="outlined"
+                    onChange={formik.handleChange}
+                    value={course_source.source_heading}
+                    error={formik.touched.course_source && formik.errors.course_source && Boolean(formik.errors.course_source[index]?.source_heading)}
+                    helperText={formik.touched.course_source && formik.errors.course_source && formik.errors.course_source[index]?.source_heading}
+                    sx={{ width: '100%', my: '15px' }}
+                  />
+                </Grid>
+                <Grid item xs={4} lg={2}>
+                  <TextField
+                    id={`source_category_${index}`}
+                    name={`course_source[${index}].source_category`}
+                    select
+                    variant="outlined"
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    value={course_source.source_category || ""}
+                    SelectProps={{ native: true }}
+                    error={formik.touched.course_source && formik.errors.course_source && Boolean(formik.errors.course_source[index]?.source_category)}
+                    helperText={formik.touched.course_source && formik.errors.course_source && formik.errors.course_source[index]?.source_category}
+                    fullWidth
+                    margin="normal"
+                    sx={{ my: '15px' }}
+                  >
+                    <option value="" disabled>Source category</option>
+                    <option value="Bidmate">Bidmate</option>
+                    <option value="Nova">Nova</option>
+                  </TextField>
+                </Grid>
+                <Grid item xs={4} lg={2}>
+                  <TextField
+                    id={`source_length_${index}`}
+                    name={`course_source[${index}].source_length`}
+                    label="Source length"
+                    type="number"
+                    variant="outlined"
+                    onChange={formik.handleChange}
+                    value={course_source.source_length}
+                    error={formik.touched.course_source && formik.errors.course_source && Boolean(formik.errors.course_source[index]?.source_length)}
+                    helperText={formik.touched.course_source && formik.errors.course_source && formik.errors.course_source[index]?.source_length}
+                    sx={{ width: '100%', my: '15px' }}
+                  />
+                </Grid>
+                <Grid item xs={4} lg={2}>
+                  {index !== 0 &&
                     <CustomButton
                       variant="contained"
-                      label="Upload Profile Image"
-                      backgroundColor="var(--black)"
+                      height="30px"
+                      width="30px"
+                      margin="10px 0 0 10px"
+                      border="1px solid var(--black)"
                       labelFontWeight={400}
-                      startIcon={<AddIcon />}
-                      onClick={handleClick}
-                    />
-                  </Grid>
-                  <Grid item my={0.5}>
-                    <CustomButton
-                      variant="outline"
-                      label="Remove"
-                      border="1px solid var(--gray)"
-                      labelFontSize="12px"
-                      labelFontWeight={400}
-                      onClick={() => setFieldValue('course_file', '')}
-                    />
-                  </Grid>
+                      label="-"
+                      onClick={() => handleRemoveCource(index)}
+                    />}
                 </Grid>
-                <Grid container columnSpacing={2}>
-                  <Grid item xs={12} lg={6}>
-                    <Field
-                      as={CustomInput}
-                      placeholder="Enter your course name"
-                      label="Cource Name"
-                      requiredLabel
-                      name="course_name"
-                      borderColorName="var(--darkGray)"
-                      type="text"
-                      sx={UserAddProfileDetailsStyle.field}
-                    />
-                    <ErrorMessage name="course_name" component="div" style={UserAddProfileDetailsStyle.errorMessage} />
-                  </Grid>
-                  <Grid item xs={12} lg={6}>
-                    <Field
-                      as={CustomInput}
-                      placeholder="Enter your cource description"
-                      label="Course Description"
-                      requiredLabel
-                      name="course_description"
-                      borderColorName="var(--darkGray)"
-                      type="text"
-                      sx={UserAddProfileDetailsStyle.field}
-                    />
-                    <ErrorMessage name="course_description" component="div" style={UserAddProfileDetailsStyle.errorMessage} />
-                  </Grid>
-                  <Grid item xs={12} lg={6}>
-                    <Field
-                      as={CustomInput}
-                      placeholder="Enter your cource expiry day"
-                      label="Course Expiry Day"
-                      requiredLabel
-                      name="course_exp_days"
-                      borderColorName="var(--darkGray)"
-                      type="number"
-                      sx={UserAddProfileDetailsStyle.field}
-                    />
-                    <ErrorMessage name="course_exp_days" component="div" style={UserAddProfileDetailsStyle.errorMessage} />
-                  </Grid>
-                  <Grid item xs={12} lg={6}>
-                    <Field
-                      as={CustomInput}
-                      placeholder="Enter your cource length"
-                      label="Course Length"
-                      requiredLabel
-                      name="course_length"
-                      borderColorName="var(--darkGray)"
-                      type="text"
-                      sx={UserAddProfileDetailsStyle.field}
-                    />
-                    <ErrorMessage name="course_length" component="div" style={UserAddProfileDetailsStyle.errorMessage} />
-                  </Grid>
-                  <Grid item xs={12} lg={6}>
-                    <Field
-                      as={CustomInput}
-                      placeholder="Enter your cource total video"
-                      label="Course Total Video"
-                      requiredLabel
-                      name="course_total_video"
-                      borderColorName="var(--darkGray)"
-                      type="number"
-                      sx={UserAddProfileDetailsStyle.field}
-                    />
-                    <ErrorMessage name="course_total_video" component="div" style={UserAddProfileDetailsStyle.errorMessage} />
-                  </Grid>
-                  <Grid item xs={12} lg={6}>
-                    <Field
-                      as={CustomInput}
-                      placeholder="Enter your cource price"
-                      label="Course Price"
-                      requiredLabel
-                      name="course_price"
-                      borderColorName="var(--darkGray)"
-                      type="number"
-                      sx={UserAddProfileDetailsStyle.field}
-                    />
-                    <ErrorMessage name="course_price" component="div" style={UserAddProfileDetailsStyle.errorMessage} />
-                  </Grid>
-                  <Grid item xs={12} lg={6}>
-                    <Field
-                      as={CustomInput}
-                      placeholder="Enter your cource doller price"
-                      label="Course Doller Price"
-                      requiredLabel
-                      name="course_Doller_price"
-                      borderColorName="var(--darkGray)"
-                      type="number"
-                      sx={UserAddProfileDetailsStyle.field}
-                    />
-                    <ErrorMessage name="course_Doller_price" component="div" style={UserAddProfileDetailsStyle.errorMessage} />
-                  </Grid>
-                  <Grid item xs={12} lg={6} mt="40px">
-                    <FormControl fullWidth focused="true">
-                      <CustomSelectInput
-                        ListboxProps={{ style: UserAddProfileDetailsStyle.listBox }}
-                        fullWidth
-                        name="course_status"
-                        disableClearable
-                        options={coursStatus}
-                        getOptionLabel={(option) => option.name}
-                        onChange={(event, newValue) => {
-                          handleChange({ target: { name: 'course_status', value: newValue?.value || '' } });
-                        }}
-                        value={coursStatus.find((option) => option.value === values?.course_status) || null}
-                        renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            label="Course Status "
-                            placeholder="Select course status"
-                            focused="true"
-                            requiredLabel
-                          />
-                        )}
-                      />
-                    </FormControl>
-                    <ErrorMessage name="course_status" component="div" style={UserAddProfileDetailsStyle.errorMessage} />
-                  </Grid>
-                </Grid>
-              </>}
-            {valueExportTab === 1 &&
-              <>
-                <Grid container columnSpacing={2}>
-                  <Grid item xs={12} lg={6}>
-                    <Field
-                      as={CustomInput}
-                      placeholder="Enter your source type title"
-                      label="Source Type Title"
-                      requiredLabel
-                      name="source_type_title"
-                      borderColorName="var(--darkGray)"
-                      type="text"
-                      sx={UserAddProfileDetailsStyle.field}
-                    />
-                    <ErrorMessage name="source_type_title" component="div" style={UserAddProfileDetailsStyle.errorMessage} />
-                  </Grid>
-                  <Grid item xs={12} lg={6}>
-                    <Field
-                      as={CustomInput}
-                      placeholder="Enter your source data type"
-                      label="Source Data Type"
-                      requiredLabel
-                      name="source_data_type"
-                      borderColorName="var(--darkGray)"
-                      type="text"
-                      sx={UserAddProfileDetailsStyle.field}
-                    />
-                    <ErrorMessage name="source_data_type" component="div" style={UserAddProfileDetailsStyle.errorMessage} />
-                  </Grid>
-                  <Grid item xs={12} lg={6}>
-                    <Field
-                      as={CustomInput}
-                      placeholder="Enter your source url"
-                      label="Source Data URL"
-                      requiredLabel
-                      name="source_URL"
-                      borderColorName="var(--darkGray)"
-                      type="text"
-                      sx={UserAddProfileDetailsStyle.field}
-                    />
-                    <ErrorMessage name="source_URL" component="div" style={UserAddProfileDetailsStyle.errorMessage} />
-                  </Grid>
-                  <Grid item xs={12} lg={6}>
-                    <Field
-                      as={CustomInput}
-                      placeholder="Enter your source length"
-                      label="Source Length"
-                      requiredLabel
-                      name="source_length"
-                      borderColorName="var(--darkGray)"
-                      type="text"
-                      sx={UserAddProfileDetailsStyle.field}
-                    />
-                    <ErrorMessage name="source_length" component="div" style={UserAddProfileDetailsStyle.errorMessage} />
-                  </Grid>
-                  <Grid item xs={12} lg={6} mt="40px">
-                    <FormControl fullWidth focused="true">
-                      <CustomSelectInput
-                        ListboxProps={{ style: UserAddProfileDetailsStyle.listBox }}
-                        fullWidth
-                        name="source_category"
-                        disableClearable
-                        options={sourceCategory}
-                        getOptionLabel={(option) => option.name}
-                        onChange={(event, newValue) => {
-                          handleChange({ target: { name: 'source_category', value: newValue?.value || '' } });
-                        }}
-                        value={sourceCategory.find((option) => option.value === values?.source_category) || null}
-                        renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            label="Source Category "
-                            placeholder="Select course status"
-                            focused="true"
-                            requiredLabel
-                          />
-                        )}
-                      />
-                    </FormControl>
-                    <ErrorMessage name="source_category" component="div" style={UserAddProfileDetailsStyle.errorMessage} />
-                  </Grid>
-                  <Grid item xs={12} lg={6}>
-                    <Field
-                      as={CustomInput}
-                      placeholder="Enter your source heading"
-                      label="Source Heading"
-                      requiredLabel
-                      name="source_heading"
-                      borderColorName="var(--darkGray)"
-                      type="text"
-                      sx={UserAddProfileDetailsStyle.field}
-                    />
-                    <ErrorMessage name="source_heading" component="div" style={UserAddProfileDetailsStyle.errorMessage} />
-                  </Grid>
-                </Grid>
-              </>}
-          </Form>
-        )}
-      </Formik>
-    </Box>
+              </Grid>
+            </div>
+          ))}
+        </>}
+        <div>
+          {valueExportTab !== 0 &&
+            <CustomButton
+              variant="contained"
+              height="30px"
+              width="30px"
+              margin="0 0 0 10px"
+              border="1px solid var(--black)"
+              labelFontWeight={400}
+              label="+"
+              onClick={handleAddCourseData}
+            />}
+          <Grid item xs={12} textAlign="end">
+            <CustomButton
+              isLoading={loading}
+              variant="contained"
+              height="30px"
+              width="104.17px"
+              backgroundColor="var(--black)"
+              margin="10px 0 0 0"
+              labelFontWeight={400}
+              label={loading ? undefined : 'Submit'}
+              type="submit"
+              disabled={loading}
+            />
+            <CustomButton
+              variant="contained"
+              height="30px"
+              width="104.17px"
+              margin="10px 0 0 10px"
+              border="1px solid var(--black)"
+              labelFontWeight={400}
+              label="Cancel"
+              onClick={() => navigate(AdminPanelRouteOfEndpoint.COURCE_ROUTE)}
+            />
+          </Grid>
+        </div>
+      </form>
+    </Box >
   )
 }
 

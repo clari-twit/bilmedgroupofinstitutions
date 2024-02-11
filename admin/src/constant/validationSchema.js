@@ -13,7 +13,7 @@ export const loginValidationSchema = Yup.object().shape({
 export const addGeneralDetailsValidationSchema = Yup.object().shape({
   course_name: Yup.string().required('Course name is required'),
   course_description: Yup.string().required('Course description is required'),
-  course_file: Yup.mixed().required('Course file is required'),
+  // course_file: Yup.mixed().required('Course file is required'),
   course_exp_days: Yup.number().required('Course expiration days is required').positive('Course expiration days must be a positive number'),
   course_length: Yup.string().required('Course length is required'),
   course_total_video: Yup.number().required('Total videos is required').positive('Total videos must be a positive number'),

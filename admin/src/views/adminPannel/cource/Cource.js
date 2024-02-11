@@ -1,9 +1,8 @@
 import axios from 'axios';
 import "datatables.net";
 import { useEffect, useState } from 'react';
-import Cookies from 'js-cookie';
-import CourceData from 'views/adminPannel/cource/CourceData';
 import { getCurrentUser } from 'utils/localStorage/getCurrentUser';
+import CourceData from 'views/adminPannel/cource/CourceData';
 
 function Cource() {
   const [costomersData, setCostomersData] = useState({});

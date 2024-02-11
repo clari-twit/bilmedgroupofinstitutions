@@ -1,19 +1,17 @@
+import { Box, Typography } from "@mui/material";
 import axios from "axios";
-import "datatables.net";
-import $ from "jquery";
-import Cookies from "js-cookie";
-import React, { useEffect, useRef } from 'react';
+import { CustomButton } from "components";
+import { AdminPanelRouteOfEndpoint } from "constant/routesEndPoint";
 import "datatables.net";
 import { successNotification } from "helper/notification";
+import $ from "jquery";
+import { useEffect, useRef } from 'react';
 import { useNavigate } from "react-router-dom";
-import './table.css'
-import { CustomButton } from "components";
-import { Box, Typography } from "@mui/material";
-import { AdminPanelRouteOfEndpoint } from "constant/routesEndPoint";
 import { capitalizeFirstLetter } from "utils/CapitalizeFirstLetterUtils";
+import { getCurrentUser } from "utils/localStorage/getCurrentUser";
+import './table.css';
 
 function CourceData({ data, getAllReworkData }) {
-  console.log(data)
   const navigate = useNavigate();
   const dataTableRef = useRef(null);
   const BASE_URL = process.env.REACT_APP_BASE_URL;
@@ -60,13 +58,15 @@ function CourceData({ data, getAllReworkData }) {
             }
           }
         },
-        { title: "Product Name", data: "course_name", render: function (data, type) { 
-          return capitalizeFirstLetter(data)
-        }},
+        {
+          title: "Product Name", data: "course_name", render: function (data, type) {
+            return capitalizeFirstLetter(data)
+          }
+        },
         { title: "Price", data: "course_price" },
         {
           title: "Status", data: "course_status", render: function (data, type, row) {
-            if (data == 1) { return `<div class="enable">Enable</div>` } else { return `<div class="disable">Disable</div>`}
+            if (data == 1) { return `<div class="enable">Enable</div>` } else { return `<div class="disable">Disable</div>` }
 
           }
         },
@@ -103,31 +103,35 @@ function CourceData({ data, getAllReworkData }) {
     const selectedIds = $("#example tbody input[type='checkbox']:checked").map(function () {
       return this.value;
     }).get();
-
+    console.log(selectedIds)
+    const course_order = selectedIds.map(id => ({
+      id: id.toString(),
+      isDeleted: true
+  }));
     try {
-      const token = Cookies.get('authToken');
-      const response = await axios.delete(BASE_URL + '/api/course/mlpdelete', {
+      const token = getCurrentUser()?.token;
+      const response = await axios.delete(BASE_URL + 'api/course/multidelete', { data: course_order }, {
+
         headers: {
           'Content-Type': 'application/json',
           'x-access-token': token
         },
-        data: JSON.stringify({ ids: selectedIds })
-      });
-      await getAllReworkData()
-      successNotification("Customer Delete successfully.");
 
+      });
+      console.log(response)
+      await getAllReworkData();
+      successNotification("Customer Delete successfully.");
     } catch (error) {
       console.error(error);
     }
   };
-
 
   return (
     <>
       <Box mt={2}>
         <Typography variant="h5" paddingLeft={2}>Cource</Typography>
       </Box>
-      <Box style={{transform: "translate(0px, 15px)"}} textAlign="end">
+      <Box style={{ transform: "translate(0px, 15px)" }} textAlign="end">
         <CustomButton
           variant="contained"
           height="30px"
@@ -152,7 +156,7 @@ function CourceData({ data, getAllReworkData }) {
         />
       </Box>
       <div className="pagination-container">
-        <table ref={dataTableRef} className="display_table" id="example" width="100%"></table>
+        <table ref={dataTableRef} className="display_table" id="example" width="100%" />
       </div>
     </>
   )

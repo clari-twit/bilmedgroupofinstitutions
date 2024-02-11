@@ -6,7 +6,7 @@ export const loginInitialValues = {
 
 // Login page initial value
 export const addGeneralDetailsInitialValues = {
-  course_file: null,
+  // course_file: null,
   course_name: '',
   course_description: '',
   course_exp_days: 0,
@@ -21,8 +21,8 @@ export const addGeneralDetailsInitialValues = {
       source_data_type: '',
       source_URL: '',
       source_length: '',
+      source_heading: '',
       source_category: '',
-      source_heading: ''
     }
   ]
 }
