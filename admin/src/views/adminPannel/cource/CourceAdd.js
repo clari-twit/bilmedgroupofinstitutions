@@ -1,6 +1,6 @@
-import { Box, FormControl, Grid, Input, Tab, Tabs, TextField, Typography } from '@mui/material';
+import { Box, Button, FormControl, Grid, Input, Tab, Tabs, TextField, Typography } from '@mui/material';
 import axios from 'axios';
-import { CustomButton } from 'components';
+import { CustomButton, CustomInput } from 'components';
 import { addGeneralDetailsInitialValues } from 'constant/initialValues';
 import { AdminPanelRouteOfEndpoint } from 'constant/routesEndPoint';
 import { addGeneralDetailsValidationSchema } from 'constant/validationSchema';
@@ -31,16 +31,11 @@ function CourceAdd() {
         errorNotification("Please select a file.");
         return;
       }
-  console.log("VVVVVVVVVVVVVVV", values)
       const formData = new FormData();
-      formData.append('course_file', selectedFile);
-  
+      formData.append("course_file", selectedFile);
+      formData.append("course_data", JSON.stringify(values));
       // Flatten nested objects before appending to FormData
       flattenObject(values, formData);
-  
-      for (let [key, value] of formData.entries()) {
-        console.log("FFFFFFFFFFFFFFFF", `Key: ${key}, Value: ${value}`);
-    }
       try {
         setLoading(true);
         const token = getCurrentUser()?.token;
@@ -50,7 +45,7 @@ function CourceAdd() {
             'x-access-token': token,
           },
         });
-  
+
         if (response.data.status === true) {
           successNotification("Course added successfully.");
           setLoading(false);
@@ -67,7 +62,7 @@ function CourceAdd() {
       }
     }
   });
-  
+
   // Function to flatten nested objects
   function flattenObject(obj, formData, prefix = '') {
     for (const key in obj) {
@@ -81,8 +76,8 @@ function CourceAdd() {
       }
     }
   }
-  
-  
+
+
 
   const handleAddCourseData = () => {
     formik.setValues({
@@ -132,12 +127,14 @@ function CourceAdd() {
         {valueExportTab === 0 &&
           <>
             <Grid container columnSpacing={2} mt={2}>
-              <Grid item xs={12} lg={6}>
-                <TextField
+              <Grid item xs={12} md={6} lg={4} xxl={3}>
+                <CustomInput
                   id="course_name"
                   name="course_name"
-                  label="Course Name"
+                  label="Course Name "
                   variant="outlined"
+                  size="small"
+                  fullWidth
                   onChange={formik.handleChange}
                   value={formik.values.course_name}
                   error={formik.touched.course_name && Boolean(formik.errors.course_name)}
@@ -145,7 +142,102 @@ function CourceAdd() {
                   sx={{ width: '100%', my: '15px' }}
                 />
               </Grid>
-              <Grid item xs={12} lg={6}>
+              <Grid item xs={12} md={6} lg={4} xxl={3} >
+                <CustomInput
+                  id="course_description"
+                  name="course_description"
+                  label="Course Description "
+                  variant="outlined"
+                  size="small"
+                  fullWidth
+                  onChange={formik.handleChange}
+                  value={formik.values.course_description}
+                  error={formik.touched.course_description && Boolean(formik.errors.course_description)}
+                  helperText={formik.touched.course_description && formik.errors.course_description}
+                  sx={{ width: '100%', my: '15px' }}
+                />
+              </Grid>
+              <Grid item xs={12} md={6} lg={4} xxl={3}>
+                <CustomInput
+                  id="course_exp_days"
+                  name="course_exp_days"
+                  label="Course Expired days "
+                  type="number"
+                  variant="outlined"
+                  size="small"
+                  fullWidth
+                  onChange={formik.handleChange}
+                  value={formik.values.course_exp_days}
+                  error={formik.touched.course_exp_days && Boolean(formik.errors.course_exp_days)}
+                  helperText={formik.touched.course_exp_days && formik.errors.course_exp_days}
+                  sx={{ width: '100%', my: '15px' }}
+                />
+              </Grid>
+              <Grid item xs={12} md={6} lg={4} xxl={3}>
+                <CustomInput
+                  id="course_total_video"
+                  name="course_total_video"
+                  label="Course total video "
+                  type="number"
+                  variant="outlined"
+                  size="small"
+                  fullWidth
+                  onChange={formik.handleChange}
+                  value={formik.values.course_total_video}
+                  error={formik.touched.course_total_video && Boolean(formik.errors.course_total_video)}
+                  helperText={formik.touched.course_total_video && formik.errors.course_total_video}
+                  sx={{ width: '100%', my: '15px' }}
+                />
+              </Grid>
+              <Grid item xs={12} md={6} lg={4} xxl={3}>
+                <CustomInput
+                  id="course_length"
+                  name="course_length"
+                  label="Course length "
+                  type="text"
+                  variant="outlined"
+                  size="small"
+                  fullWidth
+                  onChange={formik.handleChange}
+                  value={formik.values.course_length}
+                  error={formik.touched.course_length && Boolean(formik.errors.course_length)}
+                  helperText={formik.touched.course_length && formik.errors.course_length}
+                  sx={{ width: '100%', my: '15px' }}
+                />
+              </Grid>
+              <Grid item xs={12} md={6} lg={4} xxl={3}>
+                <CustomInput
+                  id="course_price"
+                  name="course_price"
+                  label="Course price "
+                  type="number"
+                  variant="outlined"
+                  size="small"
+                  fullWidth
+                  onChange={formik.handleChange}
+                  value={formik.values.course_price}
+                  error={formik.touched.course_price && Boolean(formik.errors.course_price)}
+                  helperText={formik.touched.course_price && formik.errors.course_price}
+                  sx={{ width: '100%', my: '15px' }}
+                />
+              </Grid>
+              <Grid item xs={12} md={6} lg={4} xxl={3}>
+                <CustomInput
+                  id="course_Doller_price"
+                  name="course_Doller_price"
+                  label="Course doller price "
+                  type="number"
+                  variant="outlined"
+                  size="small"
+                  fullWidth
+                  onChange={formik.handleChange}
+                  value={formik.values.course_Doller_price}
+                  error={formik.touched.course_Doller_price && Boolean(formik.errors.course_Doller_price)}
+                  helperText={formik.touched.course_Doller_price && formik.errors.course_Doller_price}
+                  sx={{ width: '100%', my: '15px' }}
+                />
+              </Grid>
+              <Grid item xs={12} md={6} lg={4} xxl={3}>
                 <FormControl>
                   <Input
                     type="file"
@@ -156,99 +248,16 @@ function CourceAdd() {
                   />
                 </FormControl>
               </Grid>
-              <Grid item xs={12} lg={6} >
-                <TextField
-                  id="course_description"
-                  name="course_description"
-                  label="Course Description"
-                  variant="outlined"
-                  onChange={formik.handleChange}
-                  value={formik.values.course_description}
-                  error={formik.touched.course_description && Boolean(formik.errors.course_description)}
-                  helperText={formik.touched.course_description && formik.errors.course_description}
-                  sx={{ width: '100%', my: '15px' }}
-                />
-              </Grid>
-              <Grid item xs={12} lg={6}>
-                <TextField
-                  id="course_exp_days"
-                  name="course_exp_days"
-                  label="Course Expired days"
-                  type="number"
-                  variant="outlined"
-                  onChange={formik.handleChange}
-                  value={formik.values.course_exp_days}
-                  error={formik.touched.course_exp_days && Boolean(formik.errors.course_exp_days)}
-                  helperText={formik.touched.course_exp_days && formik.errors.course_exp_days}
-                  sx={{ width: '100%', my: '15px' }}
-                />
-              </Grid>
-              <Grid item xs={12} lg={6}>
-                <TextField
-                  id="course_total_video"
-                  name="course_total_video"
-                  label="Course total video"
-                  type="number"
-                  variant="outlined"
-                  onChange={formik.handleChange}
-                  value={formik.values.course_total_video}
-                  error={formik.touched.course_total_video && Boolean(formik.errors.course_total_video)}
-                  helperText={formik.touched.course_total_video && formik.errors.course_total_video}
-                  sx={{ width: '100%', my: '15px' }}
-                />
-              </Grid>
-              <Grid item xs={12} lg={6}>
-                <TextField
-                  id="course_length"
-                  name="course_length"
-                  label="Course length"
-                  type="text"
-                  variant="outlined"
-                  onChange={formik.handleChange}
-                  value={formik.values.course_length}
-                  error={formik.touched.course_length && Boolean(formik.errors.course_length)}
-                  helperText={formik.touched.course_length && formik.errors.course_length}
-                  sx={{ width: '100%', my: '15px' }}
-                />
-              </Grid>
-  
-              <Grid item xs={12} lg={6}>
-                <TextField
-                  id="course_price"
-                  name="course_price"
-                  label="Course price"
-                  type="number"
-                  variant="outlined"
-                  onChange={formik.handleChange}
-                  value={formik.values.course_price}
-                  error={formik.touched.course_price && Boolean(formik.errors.course_price)}
-                  helperText={formik.touched.course_price && formik.errors.course_price}
-                  sx={{ width: '100%', my: '15px' }}
-                />
-              </Grid>
-              <Grid item xs={12} lg={6}>
-                <TextField
-                  id="course_Doller_price"
-                  name="course_Doller_price"
-                  label="Course doller price"
-                  type="number"
-                  variant="outlined"
-                  onChange={formik.handleChange}
-                  value={formik.values.course_Doller_price}
-                  error={formik.touched.course_Doller_price && Boolean(formik.errors.course_Doller_price)}
-                  helperText={formik.touched.course_Doller_price && formik.errors.course_Doller_price}
-                  sx={{ width: '100%', my: '15px' }}
-                />
-              </Grid>
-              <Grid item xs={12} lg={6}>
-                <TextField
+              <Grid item xs={12} md={6} lg={4} xxl={3}>
+                <CustomInput
                   id="status"
                   name="course_status"
                   select
                   variant="outlined"
+                  label="Status "
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  value={formik.values.course_status || ""}
+                  value={formik.values.course_status}
                   SelectProps={{ native: true }}
                   error={formik.touched?.course_status && Boolean(formik.errors?.course_status)}
                   helperText={formik.touched?.course_status && formik.errors?.course_status}
@@ -256,38 +265,40 @@ function CourceAdd() {
                   margin="normal"
                   sx={{ my: '15px' }}
                 >
-                  <option value="" disabled>Status</option>
                   <option value="Disable">Disable</option>
                   <option value="Enable">Enable</option>
-                </TextField>
+                </CustomInput>
               </Grid>
             </Grid>
           </>}
         {valueExportTab === 1 && <>
           {formik.values.course_source.map((course_source, index) => (
-            <div className='add_cource_data' key={index} >
-              <Grid container columnSpacing={2} mt={2}>
-                <Grid item xs={4} lg={2}>
-                  <TextField
+            <div className='add_cource_data' key={index}>
+              <Grid container columnSpacing={2}>
+                <Grid item xs={6} lg={3.4} xxl={1.8}>
+                  <CustomInput
                     id={`source_type_title_${index}`}
                     name={`course_source[${index}].source_type_title`}
-                    label="Source type title"
+                    label="Source type title "
+                    size="small"
+                    fullWidth
                     type="text"
                     variant="outlined"
                     onChange={formik.handleChange}
                     value={course_source.source_type_title}
-                    error={formik.touched.course_source && formik.errors.course_source && Boolean(formik.errors.course_source[index]?.source_type_title)}
                     helperText={formik.touched.course_source && formik.errors.course_source && formik.errors.course_source[index]?.source_type_title}
                     sx={{ width: '100%', my: '15px' }}
                   />
                 </Grid>
-                <Grid item xs={4} lg={2}>
-                  <TextField
+                <Grid item xs={6} lg={3.4} xxl={1.8}>
+                  <CustomInput
                     id={`source_data_type_${index}`}
                     name={`course_source[${index}].source_data_type`}
-                    label="Source data type"
+                    label="Source data type "
+                    size="small"
                     type="text"
                     variant="outlined"
+                    fullWidth
                     onChange={formik.handleChange}
                     value={course_source.source_data_type}
                     error={formik.touched.course_source && formik.errors.course_source && Boolean(formik.errors.course_source[index]?.source_data_type)}
@@ -295,13 +306,15 @@ function CourceAdd() {
                     sx={{ width: '100%', my: '15px' }}
                   />
                 </Grid>
-                <Grid item xs={4} lg={2}>
-                  <TextField
+                <Grid item xs={6} lg={3.4} xxl={1.8}>
+                  <CustomInput
                     id={`source_URL_${index}`}
                     name={`course_source[${index}].source_URL`}
-                    label="Source URL"
+                    label="Source URL "
+                    size="small"
                     type="text"
                     variant="outlined"
+                    fullWidth
                     onChange={formik.handleChange}
                     value={course_source.source_URL}
                     error={formik.touched.course_source && formik.errors.course_source && Boolean(formik.errors.course_source[index]?.source_URL)}
@@ -309,13 +322,15 @@ function CourceAdd() {
                     sx={{ width: '100%', my: '15px' }}
                   />
                 </Grid>
-                <Grid item xs={4} lg={2}>
-                  <TextField
+                <Grid item xs={6} lg={3.4} xxl={1.8}>
+                  <CustomInput
                     id={`source_heading_${index}`}
                     name={`course_source[${index}].source_heading`}
-                    label="Source heading"
+                    label="Source heading "
+                    size="small"
                     type="text"
                     variant="outlined"
+                    fullWidth
                     onChange={formik.handleChange}
                     value={course_source.source_heading}
                     error={formik.touched.course_source && formik.errors.course_source && Boolean(formik.errors.course_source[index]?.source_heading)}
@@ -323,33 +338,36 @@ function CourceAdd() {
                     sx={{ width: '100%', my: '15px' }}
                   />
                 </Grid>
-                <Grid item xs={4} lg={2}>
-                  <TextField
+                <Grid item xs={6} lg={3.4} xxl={1.8}>
+                  <CustomInput
                     id={`source_category_${index}`}
                     name={`course_source[${index}].source_category`}
                     select
                     variant="outlined"
+                    label="Source category "
+                    size="small"
                     onChange={formik.handleChange}
                     onBlur={formik.handleBlur}
-                    value={course_source.source_category || ""}
+                    value={course_source.source_category}
                     SelectProps={{ native: true }}
                     error={formik.touched.course_source && formik.errors.course_source && Boolean(formik.errors.course_source[index]?.source_category)}
                     helperText={formik.touched.course_source && formik.errors.course_source && formik.errors.course_source[index]?.source_category}
                     fullWidth
                     margin="normal"
-                    sx={{ my: '15px' }}
+                    sx={{ my: '15px', height: '34.25px' }}
                   >
-                    <option value="" disabled>Source category</option>
                     <option value="Bidmate">Bidmate</option>
                     <option value="Nova">Nova</option>
-                  </TextField>
+                  </CustomInput>
                 </Grid>
-                <Grid item xs={4} lg={2}>
-                  <TextField
+                <Grid item xs={6} lg={3.4} xxl={1.8}>
+                  <CustomInput
                     id={`source_length_${index}`}
                     name={`course_source[${index}].source_length`}
-                    label="Source length"
+                    label="Source length "
+                    size="small"
                     type="number"
+                    fullWidth
                     variant="outlined"
                     onChange={formik.handleChange}
                     value={course_source.source_length}
@@ -358,18 +376,15 @@ function CourceAdd() {
                     sx={{ width: '100%', my: '15px' }}
                   />
                 </Grid>
-                <Grid item xs={4} lg={2}>
+                <Grid item xs={12} lg={1} xxl={1} mb={{ lg: '0px', xs: '10px' }} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                   {index !== 0 &&
-                    <CustomButton
-                      variant="contained"
-                      height="30px"
-                      width="30px"
-                      margin="10px 0 0 10px"
-                      border="1px solid var(--black)"
-                      labelFontWeight={400}
-                      label="-"
+                    <Box
+                      component="div"
                       onClick={() => handleRemoveCource(index)}
-                    />}
+                      style={{ width: '20px', background: 'white', height: '25px', border: '1px solid black', cursor: 'pointer', borderRadius: '4px', textAlign: 'center' }}
+                    >
+                      -
+                    </Box>}
                 </Grid>
               </Grid>
             </div>
@@ -377,16 +392,13 @@ function CourceAdd() {
         </>}
         <div>
           {valueExportTab !== 0 &&
-            <CustomButton
-              variant="contained"
-              height="30px"
-              width="30px"
-              margin="0 0 0 10px"
-              border="1px solid var(--black)"
-              labelFontWeight={400}
-              label="+"
+            <Box
+              component="div"
               onClick={handleAddCourseData}
-            />}
+              style={{ width: '20px', background: 'white', height: '25px', border: '1px solid black', cursor: 'pointer', borderRadius: '4px', textAlign: 'center' }}
+            >
+              +
+            </Box>}
           <Grid item xs={12} textAlign="end">
             <CustomButton
               isLoading={loading}

@@ -115,22 +115,12 @@ input {
 
 input[type=text],
 input[type=search],
+input[type=number],
 input[type=password] {
-    width: 250px;
-    padding: 10px 35px 10px 10px !important;
-    font-size: 16px;
+    font-size: 12px;
     outline: none;
     border: 1px solid var(--agray) !important;
-    border-radius: 10px !important;
-}
-
-input[type=number] {
-    width: 250px;
-    padding: 10px !important;
-    font-size: 16px;
-    outline: none;
-    border: 1px solid var(--agray) !important;
-    border-radius: 10px !important;
+    border-radius: 8px !important;
 }
 
 .table_checkbox {
@@ -239,18 +229,16 @@ select.select_box {
     vertical-align: 0.15em;
 }
 
-
-
 select {
-    padding: 10px !important;
+    padding: 8.5px !important;
     padding-right: 30px !important;
     -moz-appearance: none !important;
     -webkit-appearance: none !important;
     appearance: none !important;
-    /* background-image: url('../assets/icon/select.svg') !important; */
     background-repeat: no-repeat, repeat !important;
     background-position: right .3em top 50%, 0 0 !important;
     background-size: 2em auto, 100% !important;
+    font-size: 12px !important;
 }
 
 /* For IE (thanks to @SaiManoj) */
@@ -445,7 +433,22 @@ select:focus-visible {
 .enable {
     color: green;
 }
+
 .source_img {
     width: 36px;
     height: 36px;
+}
+
+.dataTables_empty {
+    text-align: center !important;
+    padding-top: 14px !important;
+}
+
+.no-data,
+.loading-indicator {
+    width: 100% !important;
+    height: 50vh !important;
+    display: flex !important;
+    text-align: center !important;
+    justify-content: center !important;
 }

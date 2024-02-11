@@ -5,7 +5,7 @@ import { AdminPanelRouteOfEndpoint } from "constant/routesEndPoint";
 import "datatables.net";
 import { successNotification } from "helper/notification";
 import $ from "jquery";
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { capitalizeFirstLetter } from "utils/CapitalizeFirstLetterUtils";
 import { getCurrentUser } from "utils/localStorage/getCurrentUser";
@@ -14,6 +14,7 @@ import './table.css';
 function CourceData({ data, getAllReworkData }) {
   const navigate = useNavigate();
   const dataTableRef = useRef(null);
+  const [loading, setLoading] = useState(false);
   const BASE_URL = process.env.REACT_APP_BASE_URL;
 
   useEffect(() => {
@@ -30,7 +31,6 @@ function CourceData({ data, getAllReworkData }) {
       responsive: {
         details: false,
       },
-      // pagingType: "numbers",
       destroy: true,
       info: false,
       columnDefs: [{ targets: [1, 2, 3, 4], orderable: false }],
@@ -54,35 +54,36 @@ function CourceData({ data, getAllReworkData }) {
             if (data) {
               return type === 'display' ? `<img src="${imageUrl}" class="source_img" alt="img" />` : data;
             } else {
-              return null
+              return null;
             }
           }
         },
         {
-          title: "Product Name", data: "course_name", render: function (data, type) {
-            return capitalizeFirstLetter(data)
+          title: "Product Name",
+          data: "course_name",
+          render: function (data, type) {
+            return capitalizeFirstLetter(data);
           }
         },
         { title: "Price", data: "course_price" },
         {
-          title: "Status", data: "course_status", render: function (data, type, row) {
+          title: "Status",
+          data: "course_status",
+          render: function (data, type, row) {
             if (data == 1) { return `<div class="enable">Enable</div>` } else { return `<div class="disable">Disable</div>` }
-
           }
         },
         {
           title: "Action",
           data: "course_id",
           render: function (data) {
-            return `
-            <div class="action_cell"><button class="edit-button pointer" data-id="${data}" >Edit</button></div>`
+            return `<div class="action_cell"><button class="edit-button pointer" data-id="${data}" >Edit</button></div>`;
           },
         },
       ],
-
       initComplete: function () {
         var checkAllCheckbox = $(
-          '<input  className="table_checkbox" style="width: 100%;" type="checkbox" id="checkAll" />'
+          '<input className="table_checkbox" style="width: 100%;" type="checkbox" id="checkAll" />'
         ).appendTo($("#example thead th:first-child"));
         checkAllCheckbox.on("change", function () {
           var checked = $(this).prop("checked");
@@ -95,8 +96,14 @@ function CourceData({ data, getAllReworkData }) {
       var checked = $(this).prop("checked");
       $("#example tbody input[type='checkbox']").prop("checked", checked);
     });
+
+    if (loading) {
+      $(dataTableRef.current).html('<div class="loading-indicator" style="padding-top: 10vh;">Loading...</div>');
+    } else if (!data || !data.aaData || data.aaData.length === 0) {
+      $(dataTableRef.current).html('<div class="no-data" style="padding-top: 10vh;">No Data Found</div>');
+    }
+
     return () => table.destroy();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
   const handleGetSelectedIds = async () => {
@@ -107,21 +114,22 @@ function CourceData({ data, getAllReworkData }) {
     const course_order = selectedIds.map(id => ({
       id: id.toString(),
       isDeleted: true
-  }));
+    }));
     try {
+      setLoading(true);
       const token = getCurrentUser()?.token;
       const response = await axios.delete(BASE_URL + 'api/course/multidelete', { data: course_order }, {
-
         headers: {
           'Content-Type': 'application/json',
           'x-access-token': token
         },
-
       });
       console.log(response)
       await getAllReworkData();
+      setLoading(false);
       successNotification("Customer Delete successfully.");
     } catch (error) {
+      setLoading(false);
       console.error(error);
     }
   };

@@ -88,6 +88,7 @@ input[type="number"] {
 .dataTables_length {
   display: none;
 }
+
 thead tr {
   height: 45px;
 }
@@ -98,7 +99,8 @@ thead tr {
 
 .add_cource_data {
   border: 1px solid red;
-  padding: 0 10px 10px 10px ;
   border-radius: 10px;
+  padding-left: 8px;
+  padding-right: 8px;
   margin: 10px;
 }
