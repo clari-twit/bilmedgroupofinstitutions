@@ -43,15 +43,12 @@ table.dataTable.no-footer {
     border: none;
 }
 
-
-
 table.dataTable tr.even,
 table.dataTable tr.odd,
 table.dataTable tbody tr {
     background-color: none !important;
     height: 50px;
 }
-
 
 td,
 th {
@@ -112,7 +109,6 @@ input {
     padding: 5px 13px !important;
 }
 
-
 input[type=text],
 input[type=search],
 input[type=number],
@@ -154,7 +150,6 @@ th.sorting::after {
     color: #D7D7D7 !important;
     opacity: 1 !important;
 }
-
 
 .table_loader_change {
     width: 50px;
@@ -257,7 +252,7 @@ select:focus {
 
 .action_cell {
     display: flex;
-    justify-content: end;
+    justify-content: center;
 }
 
 .edit-button {

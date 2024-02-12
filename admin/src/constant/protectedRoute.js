@@ -23,7 +23,7 @@ export const protectedRoute = [
     Component: CourceAdd,
   },
   {
-    to: `${AdminPanelRouteOfEndpoint.COURCE_EDIT_ROUTE}:id`,
+    to: `${AdminPanelRouteOfEndpoint.COURCE_EDIT_ROUTE}/:editDataId`,
     Component: CourceEdit,
   },
 ]

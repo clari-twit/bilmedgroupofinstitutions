@@ -25,6 +25,7 @@ function Cource() {
 
   useEffect(() => {
     getAllReworkData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   return (
     <CourceData data={costomersData} getAllReworkData={getAllReworkData} />

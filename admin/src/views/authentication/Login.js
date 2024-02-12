@@ -37,7 +37,7 @@ function Login() {
     setLoading(true);
     if (values) {
       try {
-        const data = await postLoginAPI("api/user/auth", values);
+        const data = await postLoginAPI("api/user/userauth", values);
         if (data.status === true) {
           if (rememberMe) {
             Cookies.set('authToken', data.token);

@@ -1,4 +1,4 @@
-import { Box, Button, FormControl, Grid, Input, Tab, Tabs, TextField, Typography } from '@mui/material';
+import { Box, FormControl, Grid, Input, Tab, Tabs, Typography } from '@mui/material';
 import axios from 'axios';
 import { CustomButton, CustomInput } from 'components';
 import { addGeneralDetailsInitialValues } from 'constant/initialValues';
@@ -77,8 +77,6 @@ function CourceAdd() {
     }
   }
 
-
-
   const handleAddCourseData = () => {
     formik.setValues({
       ...formik.values,
@@ -113,8 +111,6 @@ function CourceAdd() {
       course_source: updatedCourseOrder,
     });
   }
-
-  console.log(formik.errors)
 
   return (
     <Box p={2}>
@@ -223,17 +219,17 @@ function CourceAdd() {
               </Grid>
               <Grid item xs={12} md={6} lg={4} xxl={3}>
                 <CustomInput
-                  id="course_Doller_price"
-                  name="course_Doller_price"
+                  id="course_doller_price"
+                  name="course_doller_price"
                   label="Course doller price "
                   type="number"
                   variant="outlined"
                   size="small"
                   fullWidth
                   onChange={formik.handleChange}
-                  value={formik.values.course_Doller_price}
-                  error={formik.touched.course_Doller_price && Boolean(formik.errors.course_Doller_price)}
-                  helperText={formik.touched.course_Doller_price && formik.errors.course_Doller_price}
+                  value={formik.values.course_doller_price}
+                  error={formik.touched.course_doller_price && Boolean(formik.errors.course_doller_price)}
+                  helperText={formik.touched.course_doller_price && formik.errors.course_doller_price}
                   sx={{ width: '100%', my: '15px' }}
                 />
               </Grid>

@@ -20,7 +20,7 @@ function CourceData({ data, getAllReworkData }) {
   useEffect(() => {
     $(dataTableRef.current).on("click", ".edit-button", function () {
       let row = JSON.parse(decodeURIComponent($(this).data("id")));
-      navigate(`/course/edit/${row}`);
+      navigate(`${AdminPanelRouteOfEndpoint.COURCE_EDIT_ROUTE}/${row}`);
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -70,14 +70,15 @@ function CourceData({ data, getAllReworkData }) {
           title: "Status",
           data: "course_status",
           render: function (data, type, row) {
-            if (data == 1) { return `<div class="enable">Enable</div>` } else { return `<div class="disable">Disable</div>` }
+            console.log(data)
+            if (data == "Enable") { return `<div class="enable">Enable</div>` } else { return `<div class="disable">Disable</div>` }
           }
         },
         {
           title: "Action",
           data: "course_id",
           render: function (data) {
-            return `<div class="action_cell"><button class="edit-button pointer" data-id="${data}" >Edit</button></div>`;
+            return `<div class="action_cell"><button class="edit-button pointer" data-id="${data}">Edit</button></div>`;
           },
         },
       ],
@@ -99,38 +100,34 @@ function CourceData({ data, getAllReworkData }) {
 
     if (loading) {
       $(dataTableRef.current).html('<div class="loading-indicator" style="padding-top: 10vh;">Loading...</div>');
-    } else if (!data || !data.aaData || data.aaData.length === 0) {
-      $(dataTableRef.current).html('<div class="no-data" style="padding-top: 10vh;">No Data Found</div>');
     }
 
     return () => table.destroy();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [data]);
 
   const handleGetSelectedIds = async () => {
     const selectedIds = $("#example tbody input[type='checkbox']:checked").map(function () {
       return this.value;
     }).get();
-    console.log(selectedIds)
-    const course_order = selectedIds.map(id => ({
-      id: id.toString(),
-      isDeleted: true
-    }));
     try {
       setLoading(true);
       const token = getCurrentUser()?.token;
-      const response = await axios.delete(BASE_URL + 'api/course/multidelete', { data: course_order }, {
-        headers: {
-          'Content-Type': 'application/json',
-          'x-access-token': token
-        },
-      });
-      console.log(response)
-      await getAllReworkData();
+      if (selectedIds !== []) {
+        const response = await axios.delete(BASE_URL + 'api/course/multidelete', {
+          data: { ids: selectedIds },
+          headers: {
+            'Content-Type': 'application/json',
+            'x-access-token': token
+          },
+        });
+        await getAllReworkData();
+        successNotification("Course deleted successfully.");
+      }
       setLoading(false);
-      successNotification("Customer Delete successfully.");
     } catch (error) {
       setLoading(false);
-      console.error(error);
+      console.error("Error:", error);
     }
   };
 

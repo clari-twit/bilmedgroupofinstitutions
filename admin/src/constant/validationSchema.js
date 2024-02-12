@@ -20,7 +20,7 @@ export const addGeneralDetailsValidationSchema = Yup.object().shape({
     .typeError('Course length must be a valid number'),
   course_total_video: Yup.number().required('Total videos is required').positive('Total videos must be a positive number'),
   course_price: Yup.number().required('Course price is required').positive('Course price must be a positive number'),
-  course_Doller_price: Yup.number().required('Dollar price is required').positive('Dollar price must be a positive number'),
+  course_doller_price: Yup.number().required('Dollar price is required').positive('Dollar price must be a positive number'),
   course_status: Yup.string().required('Course status is required'),
   course_source: Yup.array().of(
     Yup.object().shape({
