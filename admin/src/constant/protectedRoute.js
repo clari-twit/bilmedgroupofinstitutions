@@ -4,6 +4,8 @@ import CustomerAdmin from "views/adminPannel/customerAdmin/CustomerAdmin";
 import Cource from "views/adminPannel/cource/Cource";
 import CourceAdd from "views/adminPannel/cource/CourceAdd";
 import CourceEdit from "views/adminPannel/cource/CourceEdit";
+import CustomerEdit from "views/adminPannel/customerAdmin/CustomerEdit";
+import CustomerAdd from "views/adminPannel/customerAdmin/CustomerAdd";
 
 export const protectedRoute = [
   {
@@ -25,5 +27,13 @@ export const protectedRoute = [
   {
     to: `${AdminPanelRouteOfEndpoint.COURCE_EDIT_ROUTE}/:editDataId`,
     Component: CourceEdit,
+  },
+  {
+    to: AdminPanelRouteOfEndpoint.CUSTOMER_ADMIN_ADD_ROUTE,
+    Component: CustomerAdd,
+  },
+  {
+    to: `${AdminPanelRouteOfEndpoint.CUSTOMER_ADMIN_EDIT_ROUTE}/:editDataId`,
+    Component: CustomerEdit,
   },
 ]

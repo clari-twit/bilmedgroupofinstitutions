@@ -104,12 +104,13 @@ thead tr {
   padding-right: 8px;
   margin: 10px;
 }
+
 .pointer {
   cursor: pointer;
 }
 
 .upload_label img {
-  width: 80px ;
+  width: 80px;
   box-shadow: 3px 3px 1px #ccc;
   -webkit-box-shadow: 3px 3px 1px #ccc;
   -moz-box-shadow: 3px 3px 1px #ccc;
@@ -123,4 +124,8 @@ thead tr {
 
 .upload_label:hover .edit-icon {
   opacity: 1;
+}
+
+.MuiChip-labelMedium {
+  font-size: 12px !important;
 }

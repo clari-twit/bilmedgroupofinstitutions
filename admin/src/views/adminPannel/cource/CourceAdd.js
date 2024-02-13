@@ -27,10 +27,6 @@ function CourceAdd() {
     validationSchema: addGeneralDetailsValidationSchema,
     onSubmit: async (values) => {
       delete values["course_file"];
-      if (selectedFile === null) {
-        errorNotification("Please select a file.");
-        return;
-      }
       const formData = new FormData();
       formData.append("course_file", selectedFile);
       formData.append("course_data", JSON.stringify(values));
@@ -84,11 +80,11 @@ function CourceAdd() {
         ...formik.values.course_source,
         {
           source_type_title: "",
-          source_data_type: "",
+          source_data_type: "Video",
           source_URL: "",
           source_length: "",
           source_heading: "",
-          source_heading: ""
+          source_category: "Main Sessions"
 
         },
       ],
@@ -117,8 +113,8 @@ function CourceAdd() {
       <form autoComplete="off" onSubmit={formik.handleSubmit}>
         <Typography variant="h5" paddingLeft={2}>Cource Add</Typography>
         <Tabs textColor="inherit" TabIndicatorProps={{ sx: UserAddProfileDetailsStyle.tabsColor }} value={valueExportTab} onChange={handleExportModalTabChange} aria-label="Tabs example" style={UserAddProfileDetailsStyle.exportModalTab}>
-          <Tab label="Genral" />
-          <Tab label="Source" />
+          <Tab label="Course" />
+          <Tab label="Data" />
         </Tabs>
         {valueExportTab === 0 &&
           <>
@@ -234,6 +230,27 @@ function CourceAdd() {
                 />
               </Grid>
               <Grid item xs={12} md={6} lg={4} xxl={3}>
+                {/* <div className="upload_file">
+                  <label htmlFor="actual-btn" className="upload_label pointer">
+
+                    {defultFile === undefined && <img className='pointer edit-ico' src={URL.createObjectURL(selectedFile)} alt="profile1" />}
+                    {defultFile !== undefined && <img className='pointer edit-ico' src={`${BASE_URL}api/${defultFile}`} alt="profile2" />}
+                    {show && (
+                      <span className="edit_cover">
+                      </span>
+                    )}
+                  </label>
+                  <input
+                    id="actual-btn"
+                    accept=".jpg"
+                    onChange={handleFileChange}
+                    type="file"
+                    hidden
+                  />
+                </div> */}
+
+
+
                 <FormControl>
                   <Input
                     type="file"
@@ -250,10 +267,10 @@ function CourceAdd() {
                   name="course_status"
                   select
                   variant="outlined"
-                  label="Status "
+                  label="Status"
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
-                  value={formik.values.course_status}
+                  value={formik.values.course_status || "Enable"}
                   SelectProps={{ native: true }}
                   error={formik.touched?.course_status && Boolean(formik.errors?.course_status)}
                   helperText={formik.touched?.course_status && formik.errors?.course_status}
@@ -261,8 +278,8 @@ function CourceAdd() {
                   margin="normal"
                   sx={{ my: '15px' }}
                 >
-                  <option value="Disable">Disable</option>
                   <option value="Enable">Enable</option>
+                  <option value="Disable">Disable</option>
                 </CustomInput>
               </Grid>
             </Grid>
@@ -273,56 +290,31 @@ function CourceAdd() {
               <Grid container columnSpacing={2}>
                 <Grid item xs={6} lg={3.4} xxl={1.8}>
                   <CustomInput
-                    id={`source_type_title_${index}`}
-                    name={`course_source[${index}].source_type_title`}
-                    label="Source type title "
-                    size="small"
-                    fullWidth
-                    type="text"
+                    id={`source_category_${index}`}
+                    name={`course_source[${index}].source_category`}
+                    select
                     variant="outlined"
-                    onChange={formik.handleChange}
-                    value={course_source.source_type_title}
-                    helperText={formik.touched.course_source && formik.errors.course_source && formik.errors.course_source[index]?.source_type_title}
-                    sx={{ width: '100%', my: '15px' }}
-                  />
-                </Grid>
-                <Grid item xs={6} lg={3.4} xxl={1.8}>
-                  <CustomInput
-                    id={`source_data_type_${index}`}
-                    name={`course_source[${index}].source_data_type`}
-                    label="Source data type "
+                    label="Category "
                     size="small"
-                    type="text"
-                    variant="outlined"
-                    fullWidth
                     onChange={formik.handleChange}
-                    value={course_source.source_data_type}
-                    error={formik.touched.course_source && formik.errors.course_source && Boolean(formik.errors.course_source[index]?.source_data_type)}
-                    helperText={formik.touched.course_source && formik.errors.course_source && formik.errors.course_source[index]?.source_data_type}
-                    sx={{ width: '100%', my: '15px' }}
-                  />
-                </Grid>
-                <Grid item xs={6} lg={3.4} xxl={1.8}>
-                  <CustomInput
-                    id={`source_URL_${index}`}
-                    name={`course_source[${index}].source_URL`}
-                    label="Source URL "
-                    size="small"
-                    type="text"
-                    variant="outlined"
+                    onBlur={formik.handleBlur}
+                    value={course_source.source_category || "Main Sessions"}
+                    SelectProps={{ native: true }}
+                    error={formik.touched.course_source && formik.errors.course_source && Boolean(formik.errors.course_source[index]?.source_category)}
+                    helperText={formik.touched.course_source && formik.errors.course_source && formik.errors.course_source[index]?.source_category}
                     fullWidth
-                    onChange={formik.handleChange}
-                    value={course_source.source_URL}
-                    error={formik.touched.course_source && formik.errors.course_source && Boolean(formik.errors.course_source[index]?.source_URL)}
-                    helperText={formik.touched.course_source && formik.errors.course_source && formik.errors.course_source[index]?.source_URL}
-                    sx={{ width: '100%', my: '15px' }}
-                  />
+                    margin="normal"
+                    sx={{ my: '15px', height: '34.25px' }}
+                  >
+                    <option value="Main Sessions">Main Sessions</option>
+                    <option value="Interactive sessions">Interactive sessions</option>
+                  </CustomInput>
                 </Grid>
                 <Grid item xs={6} lg={3.4} xxl={1.8}>
                   <CustomInput
                     id={`source_heading_${index}`}
                     name={`course_source[${index}].source_heading`}
-                    label="Source heading "
+                    label="Heading "
                     size="small"
                     type="text"
                     variant="outlined"
@@ -336,33 +328,42 @@ function CourceAdd() {
                 </Grid>
                 <Grid item xs={6} lg={3.4} xxl={1.8}>
                   <CustomInput
-                    id={`source_category_${index}`}
-                    name={`course_source[${index}].source_category`}
-                    select
-                    variant="outlined"
-                    label="Source category "
+                    id={`source_type_title_${index}`}
+                    name={`course_source[${index}].source_type_title`}
+                    label="Title "
                     size="small"
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    value={course_source.source_category}
-                    SelectProps={{ native: true }}
-                    error={formik.touched.course_source && formik.errors.course_source && Boolean(formik.errors.course_source[index]?.source_category)}
-                    helperText={formik.touched.course_source && formik.errors.course_source && formik.errors.course_source[index]?.source_category}
                     fullWidth
-                    margin="normal"
-                    sx={{ my: '15px', height: '34.25px' }}
-                  >
-                    <option value="Bidmate">Bidmate</option>
-                    <option value="Nova">Nova</option>
-                  </CustomInput>
+                    type="text"
+                    variant="outlined"
+                    onChange={formik.handleChange}
+                    value={course_source.source_type_title}
+                    helperText={formik.touched.course_source && formik.errors.course_source && formik.errors.course_source[index]?.source_type_title}
+                    sx={{ width: '100%', my: '15px' }}
+                  />
+                </Grid>
+                <Grid item xs={6} lg={3.4} xxl={1.8}>
+                  <CustomInput
+                    id={`source_URL_${index}`}
+                    name={`course_source[${index}].source_URL`}
+                    label="URL "
+                    size="small"
+                    type="text"
+                    variant="outlined"
+                    fullWidth
+                    onChange={formik.handleChange}
+                    value={course_source.source_URL}
+                    error={formik.touched.course_source && formik.errors.course_source && Boolean(formik.errors.course_source[index]?.source_URL)}
+                    helperText={formik.touched.course_source && formik.errors.course_source && formik.errors.course_source[index]?.source_URL}
+                    sx={{ width: '100%', my: '15px' }}
+                  />
                 </Grid>
                 <Grid item xs={6} lg={3.4} xxl={1.8}>
                   <CustomInput
                     id={`source_length_${index}`}
                     name={`course_source[${index}].source_length`}
-                    label="Source length "
+                    label="Time"
                     size="small"
-                    type="number"
+                    type="text"
                     fullWidth
                     variant="outlined"
                     onChange={formik.handleChange}
@@ -372,14 +373,36 @@ function CourceAdd() {
                     sx={{ width: '100%', my: '15px' }}
                   />
                 </Grid>
+                <Grid item xs={6} lg={3.4} xxl={1.8}>
+                  <CustomInput
+                    id={`source_data_type_${index}`}
+                    name={`course_source[${index}].source_data_type`}
+                    select
+                    variant="outlined"
+                    label="Data Type"
+                    size="small"
+                    onChange={formik.handleChange}
+                    onBlur={formik.handleBlur}
+                    value={course_source.source_data_type || "Video"}
+                    SelectProps={{ native: true }}
+                    error={formik.touched.course_source && formik.errors.course_source && Boolean(formik.errors.course_source[index]?.source_data_type)}
+                    helperText={formik.touched.course_source && formik.errors.course_source && formik.errors.course_source[index]?.source_data_type}
+                    fullWidth
+                    margin="normal"
+                    sx={{ my: '15px', height: '34.25px' }}
+                  >
+                    <option value="Video">Video</option>
+                    <option value="PDF">PDF</option>
+                  </CustomInput>
+                </Grid>
                 <Grid item xs={12} lg={1} xxl={1} mb={{ lg: '0px', xs: '10px' }} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                   {index !== 0 &&
                     <Box
                       component="div"
                       onClick={() => handleRemoveCource(index)}
-                      style={{ width: '20px', background: 'white', height: '25px', border: '1px solid black', cursor: 'pointer', borderRadius: '4px', textAlign: 'center' }}
+                      style={{ width: '70px', background: 'white', height: '20px', border: '1px solid black', cursor: 'pointer', borderRadius: '4px', textAlign: 'center' }}
                     >
-                      -
+                      <Typography fontSize="12px">Remove</Typography>
                     </Box>}
                 </Grid>
               </Grid>
@@ -391,9 +414,9 @@ function CourceAdd() {
             <Box
               component="div"
               onClick={handleAddCourseData}
-              style={{ width: '20px', background: 'white', height: '25px', border: '1px solid black', cursor: 'pointer', borderRadius: '4px', textAlign: 'center' }}
+              style={{ width: '60px', background: 'white', height: '20px', border: '1px solid black', cursor: 'pointer', borderRadius: '4px', textAlign: 'center', marginLeft: '22px' }}
             >
-              +
+              <Typography fontSize="12px">Add</Typography>
             </Box>}
           <Grid item xs={12} textAlign="end">
             <CustomButton

@@ -12,7 +12,7 @@ function CustomerAdmin() {
     setLoading(true);
     try {
       const token = getCurrentUser()?.token;
-      const data = await axios.get(BASE_URL + '/api/customer', {
+      const data = await axios.get(BASE_URL + 'api/customer', {
         headers: {
           'x-access-token': token,
         },
