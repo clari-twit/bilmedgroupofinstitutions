@@ -5,7 +5,6 @@ import cookieParser from "cookie-parser";
 import bodyParser from "body-parser";
 
 import CustomerController from "../controllers/CustomerController.js";
-import auth from "../middleware/auth.js";
 
 const route = express.Router();
 
@@ -39,21 +38,21 @@ route.post("/forgotpassword", CustomerController.forgetPassword);
 
 // Web api routes Start
 
-route.get("/", auth, CustomerController.getCustomer);
+route.get("/", CustomerController.getCustomer);
 
-route.get("/details", auth, CustomerController.editCustomer);
+route.get("/details", CustomerController.editCustomer);
 
-route.post("/add", auth, CustomerController.insertCustomer);
+route.post("/add", CustomerController.insertCustomer);
 
-route.put("/update", auth, CustomerController.updateCustomer);
+route.put("/update", CustomerController.updateCustomer);
 
-route.delete("/multidelete", auth, CustomerController.deleteMultipleCustomers);
+route.delete("/multidelete", CustomerController.deleteMultipleCustomers);
 
-route.get("/country", auth, CustomerController.getCountry);
+route.get("/country", CustomerController.getCountry);
 
-route.get("/state", auth, CustomerController.getStateByCountryId);
+route.get("/state", CustomerController.getStateByCountryId);
 
-route.get("/autocomplete", auth, CustomerController.searchByCourseName);
+route.get("/autocomplete", CustomerController.searchByCourseName);
 
 // Web api routes Start
 

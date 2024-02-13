@@ -2,7 +2,6 @@ import queryAsync from "../lib/db.js";
 
 const courseModel = {
   create: async (course) => {
-    console.log(course, "dfhjd");
 
     try {
       const result = await queryAsync(
@@ -54,43 +53,73 @@ const courseModel = {
 
   findAllWithCourseData: async (conditions, order, limit, offset) => {
     try {
-      const query = `
-      SELECT c.course_id, c.course_name, c.course_description, c.course_expired_days,
-             c.course_image, c.course_length, c.course_total_video, c.course_price, c.course_doller_price, c.course_head_option, c.course_status,
-             CONCAT('[', GROUP_CONCAT(
-               CONCAT(
-                 '{"course_data_id":', cd.course_data_id, 
-                 ',"course_data_type":"', cd.course_data_type, 
-                 '","course_data_title":"', cd.course_data_title, 
-                 '","course_data_url":"', cd.course_data_url, 
-                 '","course_data_length":"', cd.course_data_length, 
-                 '","course_count_of_view":', cd.course_data_count_of_view, 
-                 '","course_data_category":', cd.course_data_category, 
-                 '","course_data_heading":', cd.course_data_heading, 
-                 ',"course_sort_order":', cd.course_data_sort_order, '}'
-               )
-             ), ']') AS course_data
-      FROM courses c
-      LEFT JOIN course_data cd ON c.course_id = cd.course_id
-     
-      GROUP BY c.course_id
-      ORDER BY c.course_id DESC
-    `;
+        const query = `
+        SELECT c.course_id, c.course_name, c.course_description, c.course_expired_days,
+               c.course_image, c.course_length, c.course_total_video, c.course_price, c.course_doller_price, c.course_head_option, c.course_status,
+               CONCAT('[', GROUP_CONCAT(
+                 CONCAT(
+                   '{"course_data_id":', cd.course_data_id,
+                   ',"course_data_type":"', cd.course_data_type,
+                   '","course_data_title":"', cd.course_data_title,
+                   '","course_data_url":"', cd.course_data_url,
+                   '","course_data_length":"', cd.course_data_length,
+                   '","course_count_of_view":', cd.course_data_count_of_view,
+                   '","course_data_category":', cd.course_data_category,
+                   '","course_data_heading":', cd.course_data_heading,
+                   ',"course_sort_order":', cd.course_data_sort_order, '}'
+                 )
+               ), ']') AS course_data
+        FROM courses c
+        LEFT JOIN course_data cd ON c.course_id = cd.course_id
+
+        GROUP BY c.course_id
+        ORDER BY c.course_id DESC
+      `;
 
       const coursesWithCourseData = await queryAsync(query);
       return coursesWithCourseData;
+
+      // const query = `
+      //   SELECT c.course_id, c.course_name, c.course_description, c.course_expired_days,
+      //          c.course_image, c.course_length, c.course_total_video, c.course_price, c.course_doller_price, c.course_head_option, c.course_status,
+      //          GROUP_CONCAT(
+      //            JSON_OBJECT(
+      //              'course_data_id', cd.course_data_id,
+      //              'course_data_type', cd.course_data_type,
+      //              'course_data_title', cd.course_data_title,
+      //              'course_data_url', cd.course_data_url,
+      //              'course_data_length', cd.course_data_length,
+      //              'course_count_of_view', cd.course_data_count_of_view,
+      //              'course_data_category', cd.course_data_category,
+      //              'course_data_heading', cd.course_data_heading,
+      //              'course_sort_order', cd.course_data_sort_order
+      //            )
+      //          ) AS course_data
+      //   FROM courses c
+      //   LEFT JOIN course_data cd ON c.course_id = cd.course_id
+      //   WHERE 1 ${conditions}
+      //   GROUP BY c.course_id
+      //   ORDER BY ${order}
+      //   LIMIT ?, ?
+      // `;
+
+      // const coursesWithCourseData = await queryAsync(query, [offset, limit]);
+      // return coursesWithCourseData;
     } catch (error) {
       throw error;
     }
   },
 
   findByCourseId: async (courseId) => {
+  
     const query = `
       SELECT * FROM courses
       WHERE course_id = ?`;
 
     const [rows] = await queryAsync(query, [courseId]);
-
+    if (!rows) {
+      return null; // or any appropriate response indicating no course found
+    }
     return {
       course_id: rows.course_id,
       course_name: rows.course_name,

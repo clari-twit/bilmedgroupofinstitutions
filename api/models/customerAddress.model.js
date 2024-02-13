@@ -30,7 +30,7 @@ const customerAddress = {
   update: async (addressData) => {
     try {
       const result = await queryAsync(
-        "UPDATE `customer_address` SET `first_name`=?, `last_name`=?, `company`=?, `company_id`=?, `tax_id`=?, `address_1`=?, `address_2`=?, `city`=?, `postcode`=?, `country`=?, `state`=?,  `update_at`=?  WHERE `customer_address_id`=?",
+        "UPDATE `customer_address` SET `first_name`=?, `last_name`=?, `company`=?, `company_id`=?, `tax_id`=?, `address_1`=?, `address_2`=?, `city`=?, `postcode`=?, `country`=?, `state`=?,  `update_at`=?  WHERE `customer_id`=?",
         [
           addressData.first_name,
           addressData.last_name,
@@ -44,7 +44,7 @@ const customerAddress = {
           addressData.country,
           addressData.state,
           addressData.update_at,
-          addressData.customer_address_id,
+          addressData.customer_id,
         ]
       );
       return result.affectedRows;

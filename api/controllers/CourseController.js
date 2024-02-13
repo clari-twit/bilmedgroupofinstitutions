@@ -19,8 +19,10 @@ export default class CourseController {
         course_doller_price,
         course_head_option,
         course_status,
-        course_source,
+        course_data,
       } = req.body;
+      const fetchData = JSON.parse(course_data);
+      const course_source = fetchData.course_source;
       var image_path = "";
       if (req.files && Object.keys(req.files).length > 0) {
         const image = _.first(req.files.course_file);
@@ -92,10 +94,14 @@ export default class CourseController {
       }
 
       const search_query = search_value
-        ? `AND (name LIKE '%${search_value}%'
-              OR email LIKE '%${search_value}%'
-              OR telephone LIKE '%${search_value}%'
-              OR ip LIKE '%${search_value}%'
+        ? `AND (course_name LIKE '%${search_value}%'
+              OR course_description LIKE '%${search_value}%'
+                OR cd.course_data_type LIKE '%${search_value}%'
+            OR cd.course_data_title LIKE '%${search_value}%'
+            OR cd.course_data_url LIKE '%${search_value}%'
+            OR cd.course_data_length LIKE '%${search_value}%'
+            OR cd.course_data_category LIKE '%${search_value}%'
+            OR cd.course_data_heading LIKE '%${search_value}%'
             ) `
         : "";
 
@@ -170,8 +176,10 @@ export default class CourseController {
         course_doller_price,
         course_head_option,
         course_status,
-        course_source,
+        course_data,
       } = req.body;
+      const fetchData = JSON.parse(course_data);
+      const course_source = fetchData.course_source;
       const courses = await courseModel.findById(course_id);
       const headOptionString = JSON.stringify(course_head_option);
       var image = "";
@@ -208,6 +216,7 @@ export default class CourseController {
         course_status,
         update_at: formattedDate,
       });
+
 
       for (const [index, source] of course_source.entries()) {
         const maxSortOrder = await courseDataModel.getMaxSortOrder(course_id);
@@ -257,19 +266,23 @@ export default class CourseController {
   static async deleteMultipleCourse(req, res) {
     try {
       const { ids } = req.body;
+      const course_ids  = ids.map(id => parseInt(id))
+      // console.log(course_ids ,"fghh");
 
-      const courses = await courseModel.findByMultipleIds(ids);
-      if (courses) {
-        courses.forEach((course) => {
-          var Images = course.course_image;
-          if (Images !== "") {
-            fs.unlinkSync(`../server/${Images}`, (err) => {
-              if (err) throw err;
-            });
-          }
-        });
-      }
-      const deletedCourseIds = await courseModel.deleteMultiple(ids);
+      const courses = await courseModel.findByMultipleIds(course_ids);
+      // console.log(courses,"courses"); 
+      // if (courses) {
+      //   courses.forEach((course) => {
+      //     console.log(course ,"course");
+      //     var Images = course.course_image;
+      //     if (Images !== "") {
+      //       fs.unlinkSync(`../server/${Images}`, (err) => {
+      //         if (err) throw err;
+      //       });
+      //     }
+      //   });
+      // }
+      const deletedCourseIds = await courseModel.deleteMultiple(course_ids);
       await courseDataModel.deleteMultipleByCourseIds(deletedCourseIds);
 
       res.json({
@@ -342,7 +355,7 @@ export default class CourseController {
 
   static async courseVideoCount(req, res) {
     try {
-      const course_data_id = req.query.id;
+      const course_data_id = req.query.course_data_id;
 
       const courseData = await courseDataModel.getCourseDataById(course_data_id);
 

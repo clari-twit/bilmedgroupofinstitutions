@@ -14,26 +14,12 @@ export default class CustomerController {
   static async insertCustomer(req, res) {
     try {
       const { general, address, payment_details, course_order } = req.body;
+
       const { name, email, password, telephone, status } = general;
       const { payment_method, payment_transaction_id } = payment_details;
 
-      const {
-        first_name,
-        last_name,
-        company,
-        company_id,
-        tax_id,
-        address_1,
-        address_2,
-        city,
-        postcode,
-        country,
-        state,
-      } = address;
-      const formattedDate = new Date()
-        .toISOString()
-        .slice(0, 19)
-        .replace("T", " ");
+      const { first_name, last_name, company, company_id, tax_id, address_1, address_2, city, postcode, country, state } = address;
+      const formattedDate = new Date().toISOString().slice(0, 19).replace("T", " ");
       const existingCustomer = await customer.findByEmail(toLower(email));
       if (existingCustomer) {
         res.json({
@@ -74,9 +60,7 @@ export default class CustomerController {
 
         if (course_order && course_order.length > 0) {
           for (const data of course_order) {
-            const courseOrderInfo = await courseModel.findByCourseId(
-              data.course_id
-            );
+            const courseOrderInfo = await courseModel.findByCourseId(data.course_id);
 
             if (!courseOrderInfo) {
               return res.json({
@@ -86,9 +70,8 @@ export default class CustomerController {
             }
             let currentDate = new Date();
             let futureDate = new Date();
-            futureDate.setDate(
-              currentDate.getDate() + courseOrderInfo.course_expired_days
-            );
+            futureDate.setDate(currentDate.getDate() + courseOrderInfo.course_expired_days);
+
             const course_expired_date = futureDate.toISOString().split("T")[0];
 
             await customerOrderCourseModel.create({
@@ -144,12 +127,7 @@ export default class CustomerController {
 
       const conditions = `1 ${search_query}`;
 
-      const customers = await customer.findAll(
-        conditions,
-        `${column} ${column_sort_order}`,
-        pageSize,
-        offset
-      );
+      const customers = await customer.findAll(conditions, `${column} ${column_sort_order}`, pageSize, offset);
 
       const total_customers = await customer.count(conditions);
 
@@ -178,46 +156,32 @@ export default class CustomerController {
 
   static async editCustomer(req, res) {
     try {
-      var customer_id = req.params.id;
-      const customerData = await customerOrderCourseModel.findAllWithCourseData(
-        customer_id
-      );
+      var customer_id = req.query.customer_id;
+      const customerData = await customer.findById(customer_id);
+
+      const customer_order_Data = await customerOrderCourseModel.findAllWithCourseData(customer_id);
       res.json({
         status: true,
         customer: customerData,
+        customer_order_Data: customer_order_Data
       });
     } catch (error) {
       console.log(error, "error");
       res.json({
         status: false,
-        message: "Somthing Wrong !!",
+        message: "Somthing Wrong !!" || error,
       });
     }
   }
 
   static async updateCustomer(req, res) {
     try {
+
       const { general, address, payment_details, course_order } = req.body;
       const { customer_id, name, email, telephone, status } = general;
       const { payment_method, payment_transaction_id } = payment_details;
-      const {
-        customer_address_id,
-        first_name,
-        last_name,
-        company,
-        company_id,
-        tax_id,
-        address_1,
-        address_2,
-        city,
-        postcode,
-        country,
-        state,
-      } = address;
-      const formattedDate = new Date()
-        .toISOString()
-        .slice(0, 19)
-        .replace("T", " ");
+      const { customer_address_id, first_name, last_name, company, company_id, tax_id, address_1, address_2, city, postcode, country, state } = address;
+      const formattedDate = new Date().toISOString().slice(0, 19).replace("T", " ");
 
       if (customer_id) {
         await customer.update({
@@ -249,33 +213,71 @@ export default class CustomerController {
           update_at: formattedDate,
         });
         if (course_order && course_order.length > 0) {
-          for (const data of course_order) {
-            const courseOrderInfo = await courseModel.findByCourseId(
-              data.course_id
-            );
+          // for (const data of course_order) {
+          //   const courseOrderInfo = await courseModel.findByCourseId(data.course_id);
 
-            if (!courseOrderInfo) {
-              return res.json({
-                status: false,
-                message: "Invalid course_id in course_order",
+          //   if (!courseOrderInfo) {
+          //     return res.json({
+          //       status: false,
+          //       message: "Invalid course_id in course_order",
+          //     });
+          //   }
+
+          //   const dateParts = data.expier_date.split("-");
+          //   const formattedDate = new Date(`${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`);
+
+          //   const mysqlFormattedDate = formattedDate.toISOString().split("T")[0];
+
+          //   await customerOrderCourseModel.update({
+          //     customer_order_courses_status: data.customer_order_courses_status,
+          //     customer_order_courses_expired_date: mysqlFormattedDate,
+          //     update_at: formattedDate,
+          //     customer_order_courses_id: data.customer_order_courses_id,
+          //   });
+          // }
+
+          const formattedDate = new Date().toISOString().slice(0, 19).replace("T", " ");
+
+          for (const data of course_order) {
+            if (data.customer_order_courses_id) {
+              // If customer_order_courses_id is provided, update the existing entry
+              // const dateParts = data.customer_order_courses_expired_date.split("-");
+              // const formattedDate = new Date(`${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`);
+
+              const formattedDate = new Date(data.customer_order_courses_expired_date);
+              const mysqlFormattedDate = formattedDate.toISOString().split("T")[0];
+              // const mysqlFormattedDate = formattedDate.toISOString().split("T")[0];
+
+              await customerOrderCourseModel.update({
+                // customer_order_courses_status: data.customer_order_courses_status,
+                customer_order_courses_expired_date: mysqlFormattedDate,
+                update_at: formattedDate,
+                customer_order_courses_id: data.customer_order_courses_id,
+              });
+            } else {
+              // If customer_order_courses_id is not provided, insert a new entry
+              const courseOrderInfo = await courseModel.findByCourseId(data.course_id);
+
+              if (!courseOrderInfo) {
+                return res.json({
+                  status: false,
+                  message: "Invalid course_id in course_order",
+                });
+              }
+
+              let currentDate = new Date();
+              let futureDate = new Date();
+              futureDate.setDate(currentDate.getDate() + courseOrderInfo.course_expired_days);
+              const course_expired_date = futureDate.toISOString().split("T")[0];
+
+              await customerOrderCourseModel.create({
+                course_id: data.course_id,
+                customer_id: customer_id,
+                customer_order_courses_expired_date: course_expired_date,
+                customer_order_courses_status: 1,
+                create_at: formattedDate,
               });
             }
-
-            const dateParts = data.expier_date.split("-");
-            const formattedDate = new Date(
-              `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`
-            );
-
-            const mysqlFormattedDate = formattedDate
-              .toISOString()
-              .split("T")[0];
-
-            await customerOrderCourseModel.update({
-              customer_order_courses_status: data.customer_order_courses_status,
-              customer_order_courses_expired_date: mysqlFormattedDate,
-              update_at: formattedDate,
-              customer_order_courses_id: data.customer_order_courses_id,
-            });
           }
         }
         res.json({
@@ -330,7 +332,7 @@ export default class CustomerController {
 
   static async getStateByCountryId(req, res) {
     try {
-      const countryId = req.query.id;
+      const countryId = req.query.country_id;
 
       const states = await customer.getStatesByCountryId(countryId);
 
@@ -366,7 +368,7 @@ export default class CustomerController {
 
   static async login(req, res) {
     try {
-      const { email, password } = req.body;
+      const { email, password , deviceInfo} = req.body;
       const customerData = await customer.findByEmail(toLower(email));
       if (!customerData) {
         res.json({
@@ -374,56 +376,46 @@ export default class CustomerController {
           message: "Invalid Customer Email..",
         });
       } else {
-        const PassConfirm = await bcrypt.compare(
-          password,
-          customerData.password
-        );
+        const PassConfirm = await bcrypt.compare(password, customerData.password);
         if (PassConfirm) {
-          const userAgent = req.headers["user-agent"];
-          const parser = new UAParser();
-          const deviceInfo = parser.setUA(userAgent).getResult();
+          // const userAgent = req.headers["user-agent"];
+          // const parser = new UAParser();
+          // const deviceInfo = parser.setUA(userAgent).getResult();
+          const deviceInfoData = deviceInfo;
           const ip = req.userIpAddress;
 
-          if (
-            (!customerData.ip || customerData.ip === "0") &&
-            (!customerData.device_info || customerData.device_info === "null")
-          ) {
+          if ((!customerData.ip || customerData.ip === "0") && (!customerData.device_info || customerData.device_info === "null")) {
             customerData.ip = ip;
             await customer.updateUserInfo(customerData.customer_id, {
               ip: ip,
-              device_info: JSON.stringify(deviceInfo),
+              device_info: JSON.stringify(deviceInfoData),
             });
           }
 
-          if (
-            customerData.device_info &&
-            customerData.device_info !== "UNSET"
-          ) {
+          if (customerData.device_info && customerData.device_info !== "UNSET") {
             const storedDeviceInfo = JSON.parse(customerData.device_info);
-            if (
-              JSON.stringify(deviceInfo) !== JSON.stringify(storedDeviceInfo)
-            ) {
+            if (JSON.stringify(deviceInfo) !== JSON.stringify(storedDeviceInfo)) {
               return res.json({
                 status: false,
                 message: "Invalid device, please login from registered device.",
               });
             }
           }
-          const token = Jwt.sign(
-            {
-              name: customerData.name,
-              email: customerData.email,
-            },
-            process.env.JWT_KEY,
-            {
-              expiresIn: 60 * process.env.JWT_TIME,
-            }
-          );
+          // const token = Jwt.sign(
+          //   {
+          //     name: customerData.name,
+          //     email: customerData.email,
+          //   },
+          //   process.env.JWT_KEY,
+          //   {
+          //     expiresIn: 60 * process.env.JWT_TIME,
+          //   }
+          // );
 
           res.json({
             status: true,
             message: "Customer Logged In...",
-            token: token,
+            // token: token,
             customer: customerData,
           });
         } else {
@@ -437,8 +429,7 @@ export default class CustomerController {
       console.log(error, "error");
       res.json({
         status: false,
-        message:
-          error.message || "An error occurred while processing the login.",
+        message: error.message || "An error occurred while processing the login.",
       });
     }
   }
@@ -469,8 +460,7 @@ export default class CustomerController {
       console.log(error, "error");
       res.json({
         status: false,
-        message:
-          error.message || "An error occurred while processing the login.",
+        message: error.message || "An error occurred while processing the login.",
       });
     }
   }

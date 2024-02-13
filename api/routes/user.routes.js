@@ -27,6 +27,6 @@ route.use(
   })
 );
 
-route.post("/auth", UserController.login);
+route.post("/userauth", UserController.login);
 
 export default route;

@@ -7,8 +7,6 @@ import multer from "multer";
 import fs from "fs";
 
 import CourseController from "../controllers/CourseController.js";
-import auth from "../middleware/auth.js";
-
 const route = express.Router();
 
 route.use(
@@ -61,15 +59,15 @@ const UploadFiles = upload.fields([
   },
 ]);
 
-route.post("/add", auth, UploadFiles, CourseController.insertCourse);
+route.post("/add",  UploadFiles, CourseController.insertCourse);
 
-route.get("/", auth, CourseController.getcourse);
+route.get("/",  CourseController.getcourse);
 
-route.get("/details", auth, CourseController.editCourse);
+route.get("/details",  CourseController.editCourse);
 
-route.put("/update", auth, UploadFiles, CourseController.updateCourse);
+route.put("/update",  UploadFiles, CourseController.updateCourse);
 
-route.delete("/multidelete", auth, CourseController.deleteMultipleCourse);
+route.delete("/multidelete",  CourseController.deleteMultipleCourse);
 
 // mobile api routes Start
 
