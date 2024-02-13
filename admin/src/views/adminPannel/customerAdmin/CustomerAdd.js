@@ -17,8 +17,16 @@ function CustomerAdd() {
   const [allCourceName, setAllCourceName] = useState([]);
   const [contries, setContries] = useState();
   const [allState, setAllState] = useState();
+  const [selectedCourses, setSelectedCourses] = useState([]);
   const navigate = useNavigate();
   const BASE_URL = process.env.REACT_APP_BASE_URL;
+  console.log(selectedCourses, 'selectedCourses')
+
+  const enabledCourses = allCourceName.filter(course => course?.status === 'Enable');
+  const uniqueCourses = selectedCourses.filter((course, index) => {
+    return selectedCourses.findIndex(obj => obj.id === course.id) === index;
+  });
+  const sumOfPrices = uniqueCourses?.reduce((total, course) => total + course?.price, 0);
 
   const handleExportModalTabChange = (event, newValue) => {
     setValueExportTab(newValue);
@@ -38,9 +46,6 @@ function CustomerAdd() {
       convertedData.address.country = parseInt(convertedData.address.country);
       convertedData.general.status = parseInt(convertedData.general.status);
       convertedData.course_order = convertedData.course_order.filter(item => item.id !== item.course_id);
-
-
-      console.log(convertedData, "sdgdhfdh")
       try {
         setLoading(true);
         const token = getCurrentUser()?.token;
@@ -51,7 +56,7 @@ function CustomerAdd() {
           },
         });
         if (response.data.status === true) {
-          successNotification("Customer added successfully.");
+          successNotification("Course added successfully.");
           setLoading(false);
           navigate(AdminPanelRouteOfEndpoint.CUSTOMER_ADMIN_ROUTE);
         } else {
@@ -72,7 +77,9 @@ function CustomerAdd() {
     originalArray.forEach(obj => {
       let newName = obj.course_name;
       let newId = obj.course_id;
-      let newObj = { title: newName, id: newId };
+      let newStatus = obj.course_status;
+      let newPrice = obj.course_price;
+      let newObj = { title: newName, id: newId, status: newStatus, price: newPrice };
       newArray.push(newObj);
     });
     return newArray;
@@ -88,7 +95,8 @@ function CustomerAdd() {
         },
         withCredentials: true,
       });
-      setAllCourceName(convertToNewFormat(data?.data?.aaData))
+      setAllCourceName(convertToNewFormat(data?.data?.aaData));
+      console.log(data, 'datadata')
       setLoading(false);
     } catch (err) {
       setLoading(false);
@@ -124,7 +132,7 @@ function CustomerAdd() {
     const fetchData = async (e) => {
       try {
         const token = getCurrentUser()?.token;
-        const response = await axios.get(BASE_URL + `api/customer/state?country_id=${e}`, {
+        const response = await axios.get(BASE_URL + api/customer/state?country_id=${e}, {
           headers: {
             'x-access-token': token,
           },
@@ -475,11 +483,12 @@ function CustomerAdd() {
                 <Autocomplete
                   multiple
                   id="tags-outlined"
-                  options={allCourceName}
+                  options={enabledCourses}
                   getOptionLabel={(option) => option.title}
                   defaultValue={[]}
-                  filterSelectedOptions
+                  // filterSelectedOptions
                   onChange={(event, newValue) => {
+                    setSelectedCourses(newValue);
                     formik.setFieldValue('course_order', newValue);
                   }}
                   renderInput={(params) => (
@@ -496,6 +505,33 @@ function CustomerAdd() {
                     />
                   )}
                 />
+              </Grid>
+              <Grid item xs={12}>
+                <table>
+                  <thead>
+                    <tr>
+                      <th style={{ minWidth: '200px' }}>Cource Name</th>
+                      <th style={{ minWidth: '80px' }}>Price</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {uniqueCourses.length === 0 && (
+                      <tr>
+                        <td colSpan="3" style={{ paddingTop: '30px', paddingBottom: '30px' }}>No Data Found</td>
+                      </tr>
+                    )}
+                    {uniqueCourses.length > 0 && uniqueCourses.map(course => (
+                      <tr key={course.id}>
+                        <td style={{ minWidth: '200px', paddingTop: '10px', paddingBottom: '10px' }}>{course?.title}</td>
+                        <td style={{ minWidth: '80px', paddingTop: '10px', paddingBottom: '10px' }}>{course.price}</td>
+                      </tr>
+                    ))}
+                    <tr>
+                      <td colSpan="2" style={{ paddingTop: '10px', paddingBottom: '10px' }}>Total Price:-</td>
+                      <td style={{ paddingTop: '10px', paddingBottom: '10px' }}>{sumOfPrices}</td>
+                    </tr>
+                  </tbody>
+                </table>
               </Grid>
               <Grid item xs={12} textAlign="end">
                 <CustomButton

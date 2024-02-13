@@ -129,3 +129,11 @@ thead tr {
 .MuiChip-labelMedium {
   font-size: 12px !important;
 }
+
+.MuiAutocomplete-tag {
+  display: none !important;
+}
+
+.MuiAutocomplete-clearIndicator {
+  display: none !important;
+}

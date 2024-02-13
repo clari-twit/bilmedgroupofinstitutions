@@ -83,9 +83,10 @@ select {
 .dataTables_wrapper .dataTables_paginate .paginate_button.current,
 .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
     background-color: var(--orange) !important;
-    color: white !important;
+    color: gray !important;
     border-color: transparent !important;
     border-radius: 10px !important;
+    font-weight: 900 !important;
 }
 
 .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
