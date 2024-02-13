@@ -38,6 +38,9 @@ function CustomerAdd() {
       convertedData.address.country = parseInt(convertedData.address.country);
       convertedData.general.status = parseInt(convertedData.general.status);
       convertedData.course_order = convertedData.course_order.filter(item => item.id !== item.course_id);
+
+
+      console.log(convertedData, "sdgdhfdh")
       try {
         setLoading(true);
         const token = getCurrentUser()?.token;
@@ -48,7 +51,7 @@ function CustomerAdd() {
           },
         });
         if (response.data.status === true) {
-          successNotification("Course added successfully.");
+          successNotification("Customer added successfully.");
           setLoading(false);
           navigate(AdminPanelRouteOfEndpoint.CUSTOMER_ADMIN_ROUTE);
         } else {

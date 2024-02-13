@@ -26,6 +26,31 @@ console.log(editDataId)
     setValueExportTab(newValue);
   };
 
+
+  const getByIdCourceData = async () => {
+    try {
+      const token = getCurrentUser()?.token;
+      const data = await axios.get(BASE_URL + `api/customer/details?customer_id=${editDataId}`, {
+        headers: {
+          'x-access-token': token,
+        },
+        withCredentials: true,
+      });
+      console.log(data)
+      if (data?.data) {
+        // setDefultFile(data.data.course.course.course_image)
+        // setCostomersData(convertCourseObject(data.data));
+      }
+    } catch (err) {
+      console.log(err)
+    }
+  };
+
+  useEffect(() => {
+    getByIdCourceData();
+  }, []);
+
+
  
 
   const formik = useFormik({
