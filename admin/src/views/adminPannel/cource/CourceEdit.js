@@ -2,7 +2,7 @@ import { Box, Grid, Tab, Tabs, Typography } from '@mui/material';
 import axios from 'axios';
 import { CustomButton, CustomInput } from 'components';
 import { convertCourseObject } from 'constant/initialValues';
-import { AdminPanelRouteOfEndpoint } from 'constant/routesEndPoint';
+import { AdminPanelRouteOfEndpoint, AuthenticationRouteOfEndpoint } from 'constant/routesEndPoint';
 import { addGeneralDetailsValidationSchema } from 'constant/validationSchema';
 import { useFormik } from 'formik';
 import { errorNotification, successNotification } from 'helper/notification';
@@ -12,24 +12,28 @@ import { getCurrentUser } from 'utils/localStorage/getCurrentUser';
 import { UserAddProfileDetailsStyle } from './UserAddProfileDetails.style';
 
 function CourceEdit() {
-  const navigate = useNavigate();
   const [costomersData, setCostomersData] = useState({});
   const [selectedFile, setSelectedFile] = useState(null);
   const [loading, setLoading] = useState(false);
   const [valueExportTab, setValueExportTab] = useState(0);
-  const BASE_URL = process.env.REACT_APP_BASE_URL;
-  const { editDataId } = useParams();
   // eslint-disable-next-line
   const [show, setShow] = useState(false);
   const [defultFile, setDefultFile] = useState(false);
+  const navigate = useNavigate();
+  const { editDataId } = useParams();
+  const BASE_URL = process.env.REACT_APP_BASE_URL;
+  const token = getCurrentUser()?.token;
 
   const handleExportModalTabChange = (event, newValue) => {
     setValueExportTab(newValue);
   };
 
   const getByIdCourceData = async () => {
+    if (!token) {
+      navigate(AuthenticationRouteOfEndpoint?.UNAUTHORIZE_ROUTE);
+      return;
+    }
     try {
-      const token = getCurrentUser()?.token;
       const data = await axios.get(BASE_URL + `api/course/details?course_id=${editDataId}`, {
         headers: {
           'x-access-token': token,
@@ -45,8 +49,10 @@ function CourceEdit() {
     }
   };
 
+
   useEffect(() => {
     getByIdCourceData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const formik = useFormik({
@@ -62,9 +68,12 @@ function CourceEdit() {
       }
       formData.append("course_data", JSON.stringify(values));
       flattenObject(values, formData);
+      if (!token) {
+        navigate(AuthenticationRouteOfEndpoint?.UNAUTHORIZE_ROUTE);
+        return;
+      }
       try {
         setLoading(true);
-        const token = getCurrentUser()?.token;
         const response = await axios.put(BASE_URL + 'api/course/update', formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
@@ -140,7 +149,7 @@ function CourceEdit() {
   return (
     <Box p={2}>
       <form autoComplete="off" onSubmit={formik.handleSubmit}>
-        <Typography variant="h5" paddingLeft={2}>Cource Edit</Typography>
+        <Typography variant="h4" paddingLeft={2}>Cource Edit</Typography>
         <Tabs textColor="inherit" TabIndicatorProps={{ sx: UserAddProfileDetailsStyle.tabsColor }} value={valueExportTab} onChange={handleExportModalTabChange} aria-label="Tabs example" style={UserAddProfileDetailsStyle.exportModalTab}>
           <Tab label="Course" />
           <Tab label="Data" />
@@ -411,7 +420,7 @@ function CourceEdit() {
                     margin="normal"
                     sx={{ my: '15px', height: '34.25px' }}
                   >
-                    <option value="Video">Videos</option>
+                    <option value="Video">Video</option>
                     <option value="PDF">PDF</option>
                   </CustomInput>
                 </Grid>

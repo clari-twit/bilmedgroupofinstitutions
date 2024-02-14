@@ -2,7 +2,7 @@ import { Box, FormControl, Grid, Input, Tab, Tabs, Typography } from '@mui/mater
 import axios from 'axios';
 import { CustomButton, CustomInput } from 'components';
 import { addGeneralDetailsInitialValues } from 'constant/initialValues';
-import { AdminPanelRouteOfEndpoint } from 'constant/routesEndPoint';
+import { AdminPanelRouteOfEndpoint, AuthenticationRouteOfEndpoint } from 'constant/routesEndPoint';
 import { addGeneralDetailsValidationSchema } from 'constant/validationSchema';
 import { useFormik } from 'formik';
 import { errorNotification, successNotification } from 'helper/notification';
@@ -17,6 +17,7 @@ function CourceAdd() {
   const [loading, setLoading] = useState(false);
   const [valueExportTab, setValueExportTab] = useState(0);
   const BASE_URL = process.env.REACT_APP_BASE_URL;
+  const token = getCurrentUser()?.token;
 
   const handleExportModalTabChange = (event, newValue) => {
     setValueExportTab(newValue);
@@ -28,32 +29,36 @@ function CourceAdd() {
     onSubmit: async (values) => {
       delete values["course_file"];
       const formData = new FormData();
+
+      // Append the file and form data to the FormData object
       formData.append("course_file", selectedFile);
       formData.append("course_data", JSON.stringify(values));
+
       // Flatten nested objects before appending to FormData
       flattenObject(values, formData);
+
+      if (!token) {
+        navigate(AuthenticationRouteOfEndpoint?.UNAUTHORIZE_ROUTE);
+        return;
+      }
       try {
         setLoading(true);
-        const token = getCurrentUser()?.token;
         const response = await axios.post(BASE_URL + 'api/course/add', formData, {
           headers: {
             'Content-Type': 'multipart/form-data',
             'x-access-token': token,
           },
         });
-
         if (response.data.status === true) {
           successNotification("Course added successfully.");
-          setLoading(false);
-          navigate(AdminPanelRouteOfEndpoint.COURCE_ROUTE);
+          navigate(AdminPanelRouteOfEndpoint?.COURCE_ROUTE);
         } else {
-          // Handle server response indicating failure
           errorNotification("Failed to add course.");
-          setLoading(false);
         }
       } catch (error) {
         console.error("Error:", error);
         errorNotification("An error occurred. Please try again later.");
+      } finally {
         setLoading(false);
       }
     }
@@ -111,7 +116,7 @@ function CourceAdd() {
   return (
     <Box p={2}>
       <form autoComplete="off" onSubmit={formik.handleSubmit}>
-        <Typography variant="h5" paddingLeft={2}>Cource Add</Typography>
+        <Typography variant="h4" paddingLeft={2}>Cource Add</Typography>
         <Tabs textColor="inherit" TabIndicatorProps={{ sx: UserAddProfileDetailsStyle.tabsColor }} value={valueExportTab} onChange={handleExportModalTabChange} aria-label="Tabs example" style={UserAddProfileDetailsStyle.exportModalTab}>
           <Tab label="Course" />
           <Tab label="Data" />

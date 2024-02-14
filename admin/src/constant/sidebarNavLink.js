@@ -13,7 +13,7 @@ export const adminRole = [
   {
     id: 1,
     sidebarMenuIcon: <PeopleIcon />,
-    sidebarMenuLabel: 'Customer Admin',
+    sidebarMenuLabel: 'Customer',
     sidebarMenuRoute: `${AdminPanelRouteOfEndpoint.CUSTOMER_ADMIN_ROUTE}`
   },
   {

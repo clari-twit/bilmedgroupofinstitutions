@@ -2,7 +2,7 @@ import { Autocomplete, Box, Grid, Tab, Tabs, Typography } from '@mui/material';
 import axios from 'axios';
 import { CustomButton, CustomInput } from 'components';
 import { addCustomerDetailsInitialValues } from 'constant/initialValues';
-import { AdminPanelRouteOfEndpoint } from 'constant/routesEndPoint';
+import { AdminPanelRouteOfEndpoint, AuthenticationRouteOfEndpoint } from 'constant/routesEndPoint';
 import { addCustomerDetailsValidationSchema } from 'constant/validationSchema';
 import { useFormik } from 'formik';
 import { errorNotification, successNotification } from 'helper/notification';
@@ -20,7 +20,7 @@ function CustomerAdd() {
   const [selectedCourses, setSelectedCourses] = useState([]);
   const navigate = useNavigate();
   const BASE_URL = process.env.REACT_APP_BASE_URL;
-  console.log(selectedCourses, 'selectedCourses')
+  const token = getCurrentUser()?.token;
 
   const enabledCourses = allCourceName.filter(course => course?.status === 'Enable');
   const uniqueCourses = selectedCourses.filter((course, index) => {
@@ -46,9 +46,12 @@ function CustomerAdd() {
       convertedData.address.country = parseInt(convertedData.address.country);
       convertedData.general.status = parseInt(convertedData.general.status);
       convertedData.course_order = convertedData.course_order.filter(item => item.id !== item.course_id);
+      if (!token) {
+        navigate(AuthenticationRouteOfEndpoint?.UNAUTHORIZE_ROUTE);
+        return;
+      }
       try {
         setLoading(true);
-        const token = getCurrentUser()?.token;
         const response = await axios.post(BASE_URL + 'api/customer/add', JSON.stringify(convertedData), {
           headers: {
             'Content-Type': 'application/json',
@@ -86,9 +89,12 @@ function CustomerAdd() {
   }
 
   const getAllReworkData = async () => {
+    if (!token) {
+      navigate(AuthenticationRouteOfEndpoint?.UNAUTHORIZE_ROUTE);
+      return;
+    }
     setLoading(true);
     try {
-      const token = getCurrentUser()?.token;
       const data = await axios.get(BASE_URL + 'api/course', {
         headers: {
           'x-access-token': token,
@@ -96,7 +102,6 @@ function CustomerAdd() {
         withCredentials: true,
       });
       setAllCourceName(convertToNewFormat(data?.data?.aaData));
-      console.log(data, 'datadata')
       setLoading(false);
     } catch (err) {
       setLoading(false);
@@ -111,8 +116,11 @@ function CustomerAdd() {
 
   useEffect(() => {
     const fetchData = async () => {
+      if (!token) {
+        navigate(AuthenticationRouteOfEndpoint?.UNAUTHORIZE_ROUTE);
+        return;
+      }
       try {
-        const token = getCurrentUser()?.token;
         const response = await axios.get(BASE_URL + 'api/customer/country', {
           headers: {
             'x-access-token': token,
@@ -130,9 +138,12 @@ function CustomerAdd() {
 
   useEffect(() => {
     const fetchData = async (e) => {
+      if (!token) {
+        navigate(AuthenticationRouteOfEndpoint?.UNAUTHORIZE_ROUTE);
+        return;
+      }
       try {
-        const token = getCurrentUser()?.token;
-        const response = await axios.get(BASE_URL + api/customer/state?country_id=${e}, {
+        const response = await axios.get(BASE_URL + `api/customer/state?country_id=${e}`, {
           headers: {
             'x-access-token': token,
           },
@@ -150,7 +161,7 @@ function CustomerAdd() {
   return (
     <Box p={2}>
       <form autoComplete="off" onSubmit={formik.handleSubmit}>
-        <Typography variant="h5" paddingLeft={2}>Coustomer Add</Typography>
+        <Typography variant="h4" paddingLeft={2}>Customer Add</Typography>
         <Tabs textColor="inherit" TabIndicatorProps={{ sx: UserAddProfileDetailsStyle.tabsColor }} value={valueExportTab} onChange={handleExportModalTabChange} aria-label="Tabs example" style={UserAddProfileDetailsStyle.exportModalTab}>
           <Tab label="Information" />
           <Tab label="Address" />
@@ -243,6 +254,18 @@ function CustomerAdd() {
                   <option value={1}>Enable</option>
                   <option value={0}>Disable</option>
                 </CustomInput>
+              </Grid>
+              <Grid item xs={12} textAlign="end">
+                <CustomButton
+                  variant="contained"
+                  height="30px"
+                  width="104.17px"
+                  margin="10px 0 0 10px"
+                  border="1px solid var(--black)"
+                  labelFontWeight={400}
+                  label="Next"
+                  onClick={() => setValueExportTab(1)}
+                />
               </Grid>
             </Grid>
           </>}
@@ -429,6 +452,28 @@ function CustomerAdd() {
                   {allState?.map((i, j) => <option key={j} value={i.state_id} label={i.name}  > </option>)}
                 </CustomInput>
               </Grid>
+              <Grid item xs={12} display="flex" justifyContent="space-between">
+                <CustomButton
+                  variant="contained"
+                  height="30px"
+                  width="104.17px"
+                  margin="10px 0 0 10px"
+                  border="1px solid var(--black)"
+                  labelFontWeight={400}
+                  label="Previous"
+                  onClick={() => setValueExportTab(0)}
+                />
+                <CustomButton
+                  variant="contained"
+                  height="30px"
+                  width="104.17px"
+                  margin="10px 0 0 10px"
+                  border="1px solid var(--black)"
+                  labelFontWeight={400}
+                  label="Next"
+                  onClick={() => setValueExportTab(2)}
+                />
+              </Grid>
             </Grid>
           </>}
         {
@@ -473,6 +518,28 @@ function CustomerAdd() {
                   sx={{ width: '100%', my: '15px' }}
                 />
               </Grid>
+              <Grid item xs={12} display="flex" justifyContent="space-between">
+                <CustomButton
+                  variant="contained"
+                  height="30px"
+                  width="104.17px"
+                  margin="10px 0 0 10px"
+                  border="1px solid var(--black)"
+                  labelFontWeight={400}
+                  label="Previous"
+                  onClick={() => setValueExportTab(1)}
+                />
+                <CustomButton
+                  variant="contained"
+                  height="30px"
+                  width="104.17px"
+                  margin="10px 0 0 10px"
+                  border="1px solid var(--black)"
+                  labelFontWeight={400}
+                  label="Next"
+                  onClick={() => setValueExportTab(3)}
+                />
+              </Grid>
             </Grid>
           </>}
         {
@@ -486,7 +553,6 @@ function CustomerAdd() {
                   options={enabledCourses}
                   getOptionLabel={(option) => option.title}
                   defaultValue={[]}
-                  // filterSelectedOptions
                   onChange={(event, newValue) => {
                     setSelectedCourses(newValue);
                     formik.setFieldValue('course_order', newValue);
@@ -505,6 +571,7 @@ function CustomerAdd() {
                     />
                   )}
                 />
+                {console.log(formik.values)}
               </Grid>
               <Grid item xs={12}>
                 <table>
@@ -517,7 +584,7 @@ function CustomerAdd() {
                   <tbody>
                     {uniqueCourses.length === 0 && (
                       <tr>
-                        <td colSpan="3" style={{ paddingTop: '30px', paddingBottom: '30px' }}>No Data Found</td>
+                        <td colSpan="2" style={{ paddingTop: '30px', paddingBottom: '30px' }}>No Data Found</td>
                       </tr>
                     )}
                     {uniqueCourses.length > 0 && uniqueCourses.map(course => (
@@ -527,35 +594,49 @@ function CustomerAdd() {
                       </tr>
                     ))}
                     <tr>
-                      <td colSpan="2" style={{ paddingTop: '10px', paddingBottom: '10px' }}>Total Price:-</td>
+                      <td colSpan="1" style={{ paddingTop: '10px', paddingBottom: '10px' }}>Total Price:-</td>
                       <td style={{ paddingTop: '10px', paddingBottom: '10px' }}>{sumOfPrices}</td>
                     </tr>
                   </tbody>
                 </table>
               </Grid>
-              <Grid item xs={12} textAlign="end">
-                <CustomButton
-                  isLoading={loading}
-                  variant="contained"
-                  height="30px"
-                  width="104.17px"
-                  backgroundColor="var(--black)"
-                  margin="10px 0 0 0"
-                  labelFontWeight={400}
-                  label={loading ? undefined : 'Submit'}
-                  type="submit"
-                  disabled={loading}
-                />
-                <CustomButton
-                  variant="contained"
-                  height="30px"
-                  width="104.17px"
-                  margin="10px 0 0 10px"
-                  border="1px solid var(--black)"
-                  labelFontWeight={400}
-                  label="Cancel"
-                  onClick={() => navigate(AdminPanelRouteOfEndpoint.CUSTOMER_ADMIN_ROUTE)}
-                />
+              <Grid item xs={12} display="flex" justifyContent="space-between">
+                <Box>
+                  <CustomButton
+                    variant="contained"
+                    height="30px"
+                    width="104.17px"
+                    margin="10px 0 0 10px"
+                    border="1px solid var(--black)"
+                    labelFontWeight={400}
+                    label="Previous"
+                    onClick={() => setValueExportTab(2)}
+                  />
+                </Box>
+                <Box>
+                  <CustomButton
+                    isLoading={loading}
+                    variant="contained"
+                    height="30px"
+                    width="104.17px"
+                    backgroundColor="var(--black)"
+                    margin="10px 0 0 0"
+                    labelFontWeight={400}
+                    label={loading ? undefined : 'Submit'}
+                    type="submit"
+                    disabled={loading}
+                  />
+                  <CustomButton
+                    variant="contained"
+                    height="30px"
+                    width="104.17px"
+                    margin="10px 0 0 10px"
+                    border="1px solid var(--black)"
+                    labelFontWeight={400}
+                    label="Cancel"
+                    onClick={() => navigate(AdminPanelRouteOfEndpoint.CUSTOMER_ADMIN_ROUTE)}
+                  />
+                </Box>
               </Grid>
             </Grid>
           </>

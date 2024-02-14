@@ -47,10 +47,41 @@ export const addCustomerDetailsValidationSchema = Yup.object().shape({
     first_name: Yup.string().required('First name is required'),
     last_name: Yup.string().required('Last name is required'),
     company: Yup.string().required('Company is required'),
-    company_id: Yup.number().required('Company ID is required'),
-    tax_id: Yup.number().required('Tax ID is required'),
+    company_id: Yup.number(),
+    tax_id: Yup.number(),
     address_1: Yup.string().required('Address line 1 is required'),
-    address_2: Yup.string().required('Address line 2 is required'),
+    address_2: Yup.string(),
+    city: Yup.string().required('City is required'),
+    postcode: Yup.number().required('Postcode is required'),
+    country: Yup.number().required('Country is required'),
+    state: Yup.number().required('State is required')
+  }),
+  payment_details: Yup.object().shape({
+    payment_method: Yup.string().required('Payment method is required'),
+    payment_transaction_id: Yup.number().required('Payment transaction ID is required')
+  }),
+  course_order: Yup.array().of(
+    Yup.object().shape({
+      id: Yup.number().required('Course ID is required')
+    })
+  )
+});
+export const addCustomerDetailsValidationSchemanew = Yup.object().shape({
+  general: Yup.object().shape({
+    name: Yup.string().required('Name is required'),
+    email: Yup.string().email('Invalid email').required('Email is required'),
+    password: Yup.string().min(6, 'Password must be at least 6 characters'),
+    telephone: Yup.number().required('Telephone is required'),
+    status: Yup.number().required('Status is required')
+  }),
+  address: Yup.object().shape({
+    first_name: Yup.string().required('First name is required'),
+    last_name: Yup.string().required('Last name is required'),
+    company: Yup.string().required('Company is required'),
+    company_id: Yup.number(),
+    tax_id: Yup.number(),
+    address_1: Yup.string().required('Address line 1 is required'),
+    address_2: Yup.string(),
     city: Yup.string().required('City is required'),
     postcode: Yup.number().required('Postcode is required'),
     country: Yup.number().required('Country is required'),

@@ -1,11 +1,12 @@
+import { LogoutOutlined as LogoutOutlinedIcon } from '@mui/icons-material';
 import { Box, CssBaseline } from '@mui/material';
 import dataTechnoLogo from 'assets/companyLogo.jpeg';
+import { AuthenticationRouteOfEndpoint } from 'constant/routesEndPoint';
 import { adminRole } from 'constant/sidebarNavLink';
-import Header from 'layout/Header';
 import { sidebarStyle } from 'layout/Sidebar.style';
 import Unauthorized from 'layout/Unauthorized';
 import { useState } from 'react';
-import { NavLink, Outlet, useLocation } from 'react-router-dom';
+import { NavLink, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { getCurrentUser } from 'utils/localStorage/getCurrentUser';
 
 function Sidebar() {
@@ -13,6 +14,13 @@ function Sidebar() {
   const [open, setOpen] = useState(window.innerWidth > 600);
   const location = useLocation()?.pathname;
   const userToken = getCurrentUser()?.token;
+  const navigate = useNavigate();
+
+  // Log out for use this function
+  const handleLogOut = () => {
+    localStorage.clear();
+    navigate(AuthenticationRouteOfEndpoint?.LOGIN_ROUTE);
+  }
 
   return (
     <Box>
@@ -36,11 +44,11 @@ function Sidebar() {
                   );
                 })}
               </Box>
+              <Box component="span" display="flex" justifyContent="center" onClick={() => handleLogOut()} style={{ transform: 'translate(0px, 40px)', cursor: 'pointer' }}><LogoutOutlinedIcon />&nbsp;&nbsp;Logout</Box>
             </Box>
           </Box>
           <Box sx={sidebarStyle.rightSidePartOfScreen}>
-            <Header />
-            <Box sx={{ ...sidebarStyle.contentPartOfScreen, width: open ? 'calc(100vw - 264px)' : 'calc(100vw - 61px)' }}>
+            <Box sx={{ ...sidebarStyle.contentPartOfScreen, width: open ? 'calc(100vw - 200px)' : 'calc(100vw - 61px)' }}>
               <Box sx={sidebarStyle.outletMain}>
                 {userToken ? <Outlet /> : <Unauthorized />}
               </Box>

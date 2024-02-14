@@ -9,7 +9,6 @@ th {
 
 .table_component {
     border-radius: 20px;
-    padding: 20px;
 }
 
 h3 {
@@ -48,7 +47,7 @@ table.dataTable tr.even,
 table.dataTable tr.odd,
 table.dataTable tbody tr {
     background-color: none !important;
-    height: 70px;
+    height: 50px;
 }
 
 td,
@@ -183,6 +182,8 @@ th.sorting::after {
 .dataTables_filter input {
     width: 100%;
     margin: 0 !important;
+    border: 1px solid #000 !important;
+    padding: 10px;
 }
 
 .dataTables_filter label {

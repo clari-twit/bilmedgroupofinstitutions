@@ -30,8 +30,8 @@ export const sidebarStyle = {
     width: '100%'
   },
   contentPartOfScreen: {
-    height: 'calc(100vh - 64px)',
-    padding: { xs: '12px 12px', md: '20px 24px' },
+    height: '99.99vh',
+    padding: '8px',
     backgroundColor: 'var(--neutral)'
   },
   arrowIcon: {
@@ -60,7 +60,7 @@ export const sidebarStyle = {
     height: '100vh',
     backgroundColor: 'var(--white)',
     borderRight: '1px',
-    minWidth: '264px'
+    minWidth: '200px'
   },
   sideNavClosed: {
     width: '60px'

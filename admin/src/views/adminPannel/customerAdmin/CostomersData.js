@@ -1,7 +1,7 @@
 import { Box, Typography } from '@mui/material';
 import axios from 'axios';
 import { CustomButton } from 'components';
-import { AdminPanelRouteOfEndpoint } from 'constant/routesEndPoint';
+import { AdminPanelRouteOfEndpoint, AuthenticationRouteOfEndpoint } from 'constant/routesEndPoint';
 import "datatables.net";
 import { successNotification } from "helper/notification";
 import $ from "jquery";
@@ -14,6 +14,7 @@ function CostomersData({ data, getAllReworkData }) {
   const navigate = useNavigate();
   const dataTableRef = useRef(null);
   const BASE_URL = process.env.REACT_APP_BASE_URL;
+  const token = getCurrentUser()?.token;
 
   useEffect(() => {
     $(dataTableRef.current).on("click", ".edit-button", function () {
@@ -28,7 +29,11 @@ function CostomersData({ data, getAllReworkData }) {
       pagingType: "numbers",
       destroy: true,
       info: false,
-      searching: false,
+      searching: true,
+      language: {
+        searchPlaceholder: 'Search here..',
+        search: '',
+      },
       columnDefs: [{ targets: [1, 2, 3, 4, 5, 6] }],
       responsive: true,
       data: data?.aaData,
@@ -90,10 +95,13 @@ function CostomersData({ data, getAllReworkData }) {
     const selectedIds = $("#example tbody input[type='checkbox']:checked").map(function () {
       return this.value;
     }).get();
+    if (!token) {
+      navigate(AuthenticationRouteOfEndpoint?.UNAUTHORIZE_ROUTE);
+      return;
+    }
     try {
-      const token = getCurrentUser()?.token;
       // eslint-disable-next-line
-      const response = await axios.delete(BASE_URL + '/api/customer/mlpdelete', {
+      const response = await axios.delete(BASE_URL + 'api/customer/multidelete', {
         headers: {
           'Content-Type': 'application/json',
           'x-access-token': token
@@ -110,14 +118,13 @@ function CostomersData({ data, getAllReworkData }) {
   return (
     <>
       <Box mt={2}>
-        <Typography variant="h5" paddingLeft={2}>Customer</Typography>
+        <Typography variant="h4" paddingLeft={2}>Customer</Typography>
       </Box>
       <Box style={{ transform: "translate(0px, 15px)" }} textAlign="end">
         <CustomButton
           variant="contained"
           height="30px"
           width="80px"
-          labelFontSize="18px"
           labelFontWeight={400}
           label="Delete"
           border="1px solid var(--black)"
@@ -128,7 +135,6 @@ function CostomersData({ data, getAllReworkData }) {
           variant="contained"
           height="30px"
           width="80px"
-          labelFontSize="18px"
           labelFontWeight={400}
           label="Add"
           border="1px solid var(--black)"

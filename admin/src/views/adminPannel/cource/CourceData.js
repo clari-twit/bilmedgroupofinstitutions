@@ -1,7 +1,7 @@
 import { Box, Typography } from "@mui/material";
 import axios from "axios";
 import { CustomButton } from "components";
-import { AdminPanelRouteOfEndpoint } from "constant/routesEndPoint";
+import { AdminPanelRouteOfEndpoint, AuthenticationRouteOfEndpoint } from "constant/routesEndPoint";
 import "datatables.net";
 import { successNotification } from "helper/notification";
 import $ from "jquery";
@@ -16,6 +16,7 @@ function CourceData({ data, getAllReworkData }) {
   const dataTableRef = useRef(null);
   const [loading, setLoading] = useState(false);
   const BASE_URL = process.env.REACT_APP_BASE_URL;
+  const token = getCurrentUser()?.token;
 
   useEffect(() => {
     $(dataTableRef.current).on("click", ".edit-button", function () {
@@ -27,16 +28,16 @@ function CourceData({ data, getAllReworkData }) {
 
   useEffect(() => {
     const table = $(dataTableRef.current).DataTable({
-      pagingType: "numbers",
-      responsive: {
-        details: false,
-      },
-      destroy: true,
+      pagingType: 'numbers',
+      // destroy: true,
       info: false,
-      columnDefs: [{ targets: [1, 2, 3, 4], orderable: false }],
-      responsive: true,
+      language: {
+        searchPlaceholder: 'Search here..',
+        search: '',
+      },
+      // columnDefs: [{ targets: [1, 2, 3, 4], orderable: false }],
+      // responsive: true,
       data: data?.aaData,
-      searching: false,
       columns: [
         {
           title: "",
@@ -71,7 +72,7 @@ function CourceData({ data, getAllReworkData }) {
           data: "course_status",
           render: function (data, type, row) {
             console.log(data)
-            if (data == "Enable") { return `<div class="enable">Enable</div>` } else { return `<div class="disable">Disable</div>` }
+            if (data === "Enable") { return `<div class="enable">Enable</div>` } else { return `<div class="disable">Disable</div>` }
           }
         },
         {
@@ -110,10 +111,14 @@ function CourceData({ data, getAllReworkData }) {
     const selectedIds = $("#example tbody input[type='checkbox']:checked").map(function () {
       return this.value;
     }).get();
+    if (!token) {
+      navigate(AuthenticationRouteOfEndpoint?.UNAUTHORIZE_ROUTE);
+      return;
+    }
     try {
       setLoading(true);
-      const token = getCurrentUser()?.token;
       if (selectedIds !== []) {
+        // eslint-disable-next-line
         const response = await axios.delete(BASE_URL + 'api/course/multidelete', {
           data: { ids: selectedIds },
           headers: {
@@ -134,14 +139,13 @@ function CourceData({ data, getAllReworkData }) {
   return (
     <>
       <Box mt={2}>
-        <Typography variant="h5" paddingLeft={2}>Cource</Typography>
+        <Typography variant="h4" paddingLeft={2}>Cource</Typography>
       </Box>
       <Box style={{ transform: "translate(0px, 15px)" }} textAlign="end">
         <CustomButton
           variant="contained"
           height="30px"
           width="80px"
-          labelFontSize="18px"
           labelFontWeight={400}
           label="Delete"
           border="1px solid var(--black)"
@@ -152,7 +156,6 @@ function CourceData({ data, getAllReworkData }) {
           variant="contained"
           height="30px"
           width="80px"
-          labelFontSize="18px"
           labelFontWeight={400}
           label="Add"
           border="1px solid var(--black)"
