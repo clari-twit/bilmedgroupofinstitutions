@@ -116,7 +116,7 @@ function CourceAdd() {
   return (
     <Box p={2}>
       <form autoComplete="off" onSubmit={formik.handleSubmit}>
-        <Typography variant="h4" paddingLeft={2}>Cource Add</Typography>
+        <Typography variant="h4" paddingLeft={1}>Cource Add</Typography>
         <Tabs textColor="inherit" TabIndicatorProps={{ sx: UserAddProfileDetailsStyle.tabsColor }} value={valueExportTab} onChange={handleExportModalTabChange} aria-label="Tabs example" style={UserAddProfileDetailsStyle.exportModalTab}>
           <Tab label="Course" />
           <Tab label="Data" />

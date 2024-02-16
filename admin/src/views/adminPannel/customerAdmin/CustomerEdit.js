@@ -25,13 +25,13 @@ function CustomerEdit() {
   const BASE_URL = process.env.REACT_APP_BASE_URL;
   const { editDataId } = useParams();
   const token = getCurrentUser()?.token;
-  console.log(costomersData, selectedCourses);
+  console.log(costomersData);
 
   const enabledAllCourses = allCourceName?.filter(course => course?.status === 'Enable');
   const uniqueCourses = costomersData?.course_order?.filter((course, index) => {
     return costomersData?.course_order?.findIndex(obj => obj.id === course.id) === index;
   });
-  // console.log(enabledCourses, nabledCourses)
+  console.log(enabledAllCourses)
   const sumOfPrices = uniqueCourses?.reduce((total, course) => total + course?.price, 0);
 
   const handleSave = () => {
@@ -61,7 +61,7 @@ function CustomerEdit() {
         },
         withCredentials: true,
       });
-      console.log(data)
+      //  console.log(data)
       if (data?.data) {
         // setDefultFile(data.data.course.course.course_image)
         setCostomersData(convertCustomerData(data.data.customer[0]));
@@ -80,25 +80,27 @@ function CustomerEdit() {
     initialValues: addCustomerDetailsInitialValues,
     validationSchema: addCustomerDetailsValidationSchemanew,
     onSubmit: async (values) => {
-      console.log(values)
+     
+      console.log(values,"sgdhffhg")
       const fillData = ConvertCustomerData(values)
       delete fillData.create_at
       delete fillData.token
       delete fillData.update_at
       fillData["customer_id"] = editDataId
       fillData["customer_address_id"] = editDataId
-      // delete fillData.create_at
-      // values.course_order.forEach(order => {
-      //   order.course_id = order.course_id;
-      //   delete order.title;
-      //   delete order.id;
-      // });
-      // const convertedData = values;
-      // convertedData.address.state = parseInt(convertedData.address.state);
-      // convertedData.address.country = parseInt(convertedData.address.country);
-      // convertedData.general.status = parseInt(convertedData.general.status);
+      delete fillData.create_at
+      values.course_order.forEach(order => {
+        order.course_id = order.course_id;
+        delete order.title;
+        delete order.id;
+      });
+      
+      const convertedData = values;
+      convertedData.address.state = parseInt(convertedData.address.state);
+      convertedData.address.country = parseInt(convertedData.address.country);
+      convertedData.general.status = parseInt(convertedData.general.status);
       // convertedData.course_order = convertedData.course_order.filter(item => item.id !== item.course_id);
-      // console.log("convertedData", convertedData)
+      console.log("sgdhffhg", convertedData)
       console.log(fillData)
       if (!token) {
         navigate(AuthenticationRouteOfEndpoint?.UNAUTHORIZE_ROUTE);
@@ -134,7 +136,7 @@ function CustomerEdit() {
     formik.setValues(costomersData);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [costomersData]);
-  console.log(formik.values)
+  // console.log(formik.values)
 
   function convertToNewFormat(originalArray) {
     let newArray = [];
@@ -164,6 +166,7 @@ function CustomerEdit() {
         },
         withCredentials: true,
       });
+      console.log("ffffffffff", data)
       setAllCourceName(convertToNewFormat(data?.data?.aaData))
       setLoading(false);
     } catch (err) {
@@ -220,10 +223,44 @@ function CustomerEdit() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [formik.values?.address?.country]);
   // console.log(formik.errors)
+
+  const removeCourseOrder = (idToRemove) => {
+    const updatedCourseOrder = costomersData.course_order.filter(course => course.id !== idToRemove);
+    setCostomersData({
+      ...costomersData,
+      course_order: updatedCourseOrder
+    });
+  }
+
+  const handleDateUpdate = (e, j) => {
+
+    const date = new Date(e);
+
+    // Convert the date to UTC string
+    var utcDateString = date.toUTCString();
+    console.log(utcDateString, j)
+    const updatedOrder = {
+      ...costomersData,
+      course_order: costomersData.course_order.map(course => {
+        if (course.id === j) {
+          return {
+            ...course,
+            customer_order_courses_expired_date: utcDateString
+          };
+        }
+        return course;
+      })
+    };
+    setCostomersData(updatedOrder);
+    setIsEditing(false)
+  }
+
+
+console.log(formik.errors)
   return (
     <Box p={2}>
       <form autoComplete="off" onSubmit={formik.handleSubmit}>
-        <Typography variant="h4" paddingLeft={2}>Customer Edit</Typography>
+        <Typography variant="h4" paddingLeft={1}>Customer Edit</Typography>
         <Tabs textColor="inherit" TabIndicatorProps={{ sx: UserAddProfileDetailsStyle.tabsColor }} value={valueExportTab} onChange={handleExportModalTabChange} aria-label="Tabs example" style={UserAddProfileDetailsStyle.exportModalTab}>
           <Tab label="Information" />
           <Tab label="Address" />
@@ -638,7 +675,6 @@ function CustomerEdit() {
                   defaultValue={[]}
                   onChange={(event, newValue) => {
                     setSelectedCourses(newValue);
-                    console.log(formik.setFieldValue('course_order', newValue), newValue, 'newValue')
                     formik.setFieldValue('course_order', newValue);
                   }}
                   renderInput={(params) => (
@@ -664,16 +700,17 @@ function CustomerEdit() {
                       <th style={{ minWidth: '80px' }}>Created Date</th>
                       <th style={{ minWidth: '80px' }}>Expiry Date</th>
                       <th style={{ minWidth: '80px' }}>Price</th>
+                      <th style={{ minWidth: '80px' }}>Action</th>
                     </tr>
                   </thead>
                   <tbody>
-                    {uniqueCourses.length === 0 && (
+                    {uniqueCourses?.length === 0 && (
                       <tr>
                         <td colSpan="4" style={{ paddingTop: '30px', paddingBottom: '30px' }}>No Data Found</td>
                       </tr>
                     )}
-                    {console.log(uniqueCourses)}
-                    {uniqueCourses.length > 0 && uniqueCourses.map(course => (
+                    {console.log(costomersData)}
+                    {costomersData?.course_order?.length > 0 && costomersData?.course_order.map(course => (
                       <tr key={course.id}>
                         <td style={{ minWidth: '200px', paddingTop: '10px', paddingBottom: '10px' }}>{course?.title}</td>
                         <td style={{ minWidth: '140px', paddingTop: '10px', paddingBottom: '10px' }}>{convertDateFormat(course?.create_at)}</td>
@@ -683,17 +720,39 @@ function CustomerEdit() {
                               <input
                                 type="date"
                                 value={editedValue}
-                                onChange={(e) => setEditedValue(e.target.value)}
+                                onChange={(e) => handleDateUpdate(e.target.value, course.id)}
                                 style={{ borderRadius: '0' }}
                               />
                               <button onClick={handleSave}>Save</button>
                               <button onClick={handleCancel}>Cancel</button>
                             </>
                           ) : (
-                            <div onClick={() => setIsEditing(true)}>{editedValue}</div>
+                            <div onClick={() => setIsEditing(true)}>{convertDateFormat(course?.customer_order_courses_expired_date)}</div>
                           )}
                         </td>
                         <td style={{ minWidth: '80px', paddingTop: '10px', paddingBottom: '10px' }}>{course.price}</td>
+                        <td>
+                          <CustomButton
+                            variant="contained"
+                            // height="30px"
+                            // width="104.17px"
+                            margin="0 10px"
+                            border="1px solid var(--black)"
+                            labelFontWeight={400}
+                            label="Edit"
+                            onClick={() => setIsEditing(true)}
+                          />
+                          <CustomButton
+                            variant="contained"
+                            // height="30px"
+                            // width="104.17px"
+                            // margin="10px 0 0 10px"
+                            border="1px solid var(--black)"
+                            labelFontWeight={400}
+                            label="remove"
+                            onClick={() => removeCourseOrder(course.id)}
+                          />
+                        </td>
                       </tr>
                     ))}
                     <tr>

@@ -118,7 +118,7 @@ function CostomersData({ data, getAllReworkData }) {
   return (
     <>
       <Box mt={2}>
-        <Typography variant="h4" paddingLeft={2}>Customer</Typography>
+        <Typography variant="h4" paddingLeft={1}>Customer</Typography>
       </Box>
       <Box style={{ transform: "translate(0px, 15px)" }} textAlign="end">
         <CustomButton

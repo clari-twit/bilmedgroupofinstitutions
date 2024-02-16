@@ -161,7 +161,7 @@ function CustomerAdd() {
   return (
     <Box p={2}>
       <form autoComplete="off" onSubmit={formik.handleSubmit}>
-        <Typography variant="h4" paddingLeft={2}>Customer Add</Typography>
+        <Typography variant="h4" paddingLeft={1}>Customer Add</Typography>
         <Tabs textColor="inherit" TabIndicatorProps={{ sx: UserAddProfileDetailsStyle.tabsColor }} value={valueExportTab} onChange={handleExportModalTabChange} aria-label="Tabs example" style={UserAddProfileDetailsStyle.exportModalTab}>
           <Tab label="Information" />
           <Tab label="Address" />
